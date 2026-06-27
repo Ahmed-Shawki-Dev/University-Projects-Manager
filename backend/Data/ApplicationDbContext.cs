@@ -1,6 +1,20 @@
-﻿namespace backend.Data;
+﻿using backend.Models;
+using Microsoft.EntityFrameworkCore;
 
-public class ApplicationDbContext
+namespace backend.Data;
+
+public class ApplicationDbContext : DbContext
 {
-    
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options) { }
+
+    public DbSet<University> Universities { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        //* Unique Slug
+        modelBuilder.Entity<University>().HasIndex(u => u.Slug).IsUnique();
+    }
 }
