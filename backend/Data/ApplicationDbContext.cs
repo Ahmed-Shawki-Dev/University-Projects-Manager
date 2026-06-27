@@ -17,5 +17,7 @@ public class ApplicationDbContext : DbContext
 
         //* Unique Slug
         modelBuilder.Entity<University>().HasIndex(u => u.Slug).IsUnique();
+
+        modelBuilder.Entity<Faculty>().HasIndex(f => new { f.UniversityId, f.Slug }).IsUnique();
     }
 }
