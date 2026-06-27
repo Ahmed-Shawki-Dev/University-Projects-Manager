@@ -7,9 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
-    [ApiController]
-    [Route("/api/university")]
-    public class UniversityController(ApplicationDbContext context) : ControllerBase
+    public class UniversityController(ApplicationDbContext context) : BaseApiController
     {
         // Get All Universities
         [HttpGet]
@@ -17,7 +15,7 @@ namespace backend.Controllers
         {
             var universities = await context.Universities.AsNoTracking().ToListAsync();
             var universitiesDtos = universities.Select(u => u.ToDto());
-            return Ok(universitiesDtos);
+            return Success(universitiesDtos, "Get All Universities Successfully");
         }
 
         // Get Specific University
@@ -30,11 +28,11 @@ namespace backend.Controllers
             if (university != null)
             {
                 var universityDto = university.ToDto();
-                return Ok(universityDto);
+                return Success(universityDto, "Get Specific University Successfully");
             }
             else
             {
-                return NotFound();
+                return CustomNotFound("The University Not Found", []);
             }
         }
 
@@ -47,17 +45,21 @@ namespace backend.Controllers
                 .AnyAsync(u => u.Slug == universityDto.Slug);
             if (isExist)
             {
-                return BadRequest("The University With The Slug Is Already Exist");
+                return CustomBadRequest(
+                    "The University With The Slug Is Already Exist",
+                    new List<string> { "The provided slug is already taken by another university." }
+                );
             }
             else
             {
                 var universityModel = universityDto.ToModel();
                 context.Universities.Add(universityModel);
                 await context.SaveChangesAsync();
-                return CreatedAtAction(
+                return CustomCreateAtAction(
                     nameof(GetBySlug),
                     new { slug = universityModel.Slug },
-                    universityModel.ToDto()
+                    universityModel.ToDto(),
+                    "University Created Successfully"
                 );
             }
         }
