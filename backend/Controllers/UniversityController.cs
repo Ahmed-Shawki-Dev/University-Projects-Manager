@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.DTOs;
+using backend.DTOs.University;
 using backend.Mappers;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -52,7 +53,7 @@ namespace backend.Controllers
             }
             else
             {
-                var universityModel = universityDto.ToModel();
+                var universityModel = universityDto.FromCreateDtoToModel();
                 context.Universities.Add(universityModel);
                 await context.SaveChangesAsync();
                 return CustomCreateAtAction(
@@ -62,6 +63,50 @@ namespace backend.Controllers
                     "University Created Successfully"
                 );
             }
+        }
+
+        // Update University
+        [HttpPut("{slug}")]
+        public async Task<IActionResult> Update(
+            [FromRoute] string slug,
+            [FromBody] UpdateUniversityDto universityDto
+        )
+        {
+            var universityModel = await context.Universities.FirstOrDefaultAsync(u =>
+                u.Slug == slug
+            );
+
+            if (universityModel == null)
+            {
+                return CustomNotFound(
+                    "The University Not Found",
+                    new List<string>() { "Not Found" }
+                );
+            }
+
+            universityModel.Name = universityDto.Name;
+
+            await context.SaveChangesAsync();
+            return Success(universityModel.ToDto(), "University Updated Successfully");
+        }
+
+        // Remove University
+        [HttpDelete("{slug}")]
+        public async Task<IActionResult> Remove([FromRoute] string slug)
+        {
+            var universityModel = await context.Universities.FirstOrDefaultAsync(u =>
+                u.Slug == slug
+            );
+            if (universityModel == null)
+            {
+                return CustomNotFound(
+                    "The University Not Found",
+                    new List<string>() { "Not Found" }
+                );
+            }
+            context.Universities.Remove(universityModel);
+            await context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
