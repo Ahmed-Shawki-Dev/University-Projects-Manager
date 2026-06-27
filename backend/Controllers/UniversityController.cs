@@ -46,7 +46,7 @@ namespace backend.Controllers
             if (isExist)
             {
                 return CustomBadRequest(
-                    "The University With The Slug Is Already Exist",
+                    "Validation Error",
                     new List<string> { "The provided slug is already taken by another university." }
                 );
             }
