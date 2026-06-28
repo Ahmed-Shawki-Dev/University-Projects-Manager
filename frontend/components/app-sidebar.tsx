@@ -1,3 +1,4 @@
+"use client";
 import {
   Sidebar,
   SidebarContent,
@@ -11,9 +12,13 @@ import {
 } from "@/components/ui/sidebar";
 import { mockProjects } from "@/mock/projectsMock";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { ModeToggle } from "./ModeToggle";
 
 export function AppSidebar() {
+  const params = useParams();
+  const uni = params.universitySlug;
+  const fac = params.facultySlug;
   return (
     <Sidebar>
       <SidebarHeader className="border-b h-14">Logo</SidebarHeader>
@@ -25,7 +30,7 @@ export function AppSidebar() {
             {mockProjects.map((project) => (
               <SidebarMenuItem key={project.id}>
                 <SidebarMenuButton asChild>
-                  <Link href={project.url}>
+                  <Link href={`/app/${uni}/${fac}/${project.url}`}>
                     <project.icon className="h-4 w-4" />
                     <span>{project.name}</span>
                   </Link>
