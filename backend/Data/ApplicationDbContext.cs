@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<University> Universities { get; set; }
     public DbSet<Faculty> Faculties { get; set; }
     public DbSet<Project> Projects { get; set; }
+    public DbSet<backend.Models.Task> Tasks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

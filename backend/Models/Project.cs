@@ -2,6 +2,7 @@ namespace backend.Models
 {
     public enum ProjectType
     {
+        Unknown = 0,
         CourseProject = 1,
         UniversityProject = 2,
         GraduationProject = 3,
@@ -11,7 +12,7 @@ namespace backend.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; }
         public string Slug { get; set; } = string.Empty;
         public DateTime? Deadline { get; set; }
 
