@@ -10,6 +10,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<University> Universities { get; set; }
     public DbSet<Faculty> Faculties { get; set; }
+    public DbSet<Project> Projects { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -19,6 +20,7 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<University>().HasIndex(u => u.Slug).IsUnique();
 
         modelBuilder.Entity<Faculty>().HasIndex(f => new { f.UniversityId, f.Slug }).IsUnique();
+        modelBuilder.Entity<Project>().HasIndex(p => new { p.FacultyId, p.Slug }).IsUnique();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

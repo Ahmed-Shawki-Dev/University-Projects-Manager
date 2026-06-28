@@ -8,5 +8,7 @@ namespace backend.Models
 
         public Guid UniversityId { get; set; }
         public University University { get; set; } = null!;
+
+        public List<Project> Projects { get; set; } = new List<Project>();
     }
 }
