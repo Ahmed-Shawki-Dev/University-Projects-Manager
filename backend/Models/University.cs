@@ -1,6 +1,6 @@
 ﻿namespace backend.Models;
 
-public class University
+public class University : BaseEntity
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
