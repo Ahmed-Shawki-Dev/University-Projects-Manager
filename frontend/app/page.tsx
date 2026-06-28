@@ -1,5 +1,9 @@
-"use client";
+import { ModeToggle } from "@/components/ModeToggle";
+
 export default function HomePage() {
-  console.log(PaginatedApiResponse);
-  return <div> Hello World! </div>;
+  return (
+    <div>
+      <ModeToggle />
+    </div>
+  );
 }
