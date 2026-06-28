@@ -20,5 +20,7 @@ namespace backend.Models
 
         public Guid FacultyId { get; set; }
         public Faculty Faculty { get; set; } = null!;
+
+        public List<Task> Tasks { get; set; } = new();
     }
 }
