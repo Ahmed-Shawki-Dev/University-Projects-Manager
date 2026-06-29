@@ -16,13 +16,13 @@ const ProjectPage = async ({
     `/api/universities/${universitySlug}/faculties/${facultySlug}/projects/${projectSlug}/tasks`,
   );
 
-  console.log(res);
   return (
     <div>
-      {res.data?.tasks.map((task) => (
-        <div key={task.id}>{task.title}</div>
-      ))}
-      <KanbanBoard />
+      <KanbanBoard
+        columns={res?.data?.columns ?? []}
+        columnsOrder={res?.data?.columnsOrder ?? []}
+        tasks={res?.data?.tasks ?? []}
+      />
     </div>
   );
 };

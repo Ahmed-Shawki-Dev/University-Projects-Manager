@@ -42,54 +42,55 @@ namespace backend.Controllers
                 .Select(t => t.ToDto())
                 .ToListAsync();
 
-            var columns = new Dictionary<string, KanbanColumnDto>
+            var columns = new Dictionary<TaskStatusEnum, KanbanColumnDto>
             {
                 {
-                    "Todo",
+                    TaskStatusEnum.Todo,
                     new KanbanColumnDto(
-                        "Todo",
+                        TaskStatusEnum.Todo,
                         "To Do",
-                        tasks
-                            .Where(t => t.Status == TaskStatusEnum.Todo.ToString())
-                            .Select(t => t.Id)
-                            .ToList()
+                        tasks.Where(t => t.Status == TaskStatusEnum.Todo).Select(t => t.Id).ToList()
                     )
                 },
                 {
-                    "InProgress",
+                    TaskStatusEnum.InProgress,
                     new KanbanColumnDto(
-                        "InProgress",
+                        TaskStatusEnum.InProgress,
                         "In Progress",
                         tasks
-                            .Where(t => t.Status == TaskStatusEnum.InProgress.ToString())
+                            .Where(t => t.Status == TaskStatusEnum.InProgress)
                             .Select(t => t.Id)
                             .ToList()
                     )
                 },
                 {
-                    "Review",
+                    TaskStatusEnum.Review,
                     new KanbanColumnDto(
+                        TaskStatusEnum.Review,
                         "Review",
-                        "Review",
-                        tasks.Where(t => t.Status == "Review").Select(t => t.Id).ToList()
+                        tasks
+                            .Where(t => t.Status == TaskStatusEnum.Review)
+                            .Select(t => t.Id)
+                            .ToList()
                     )
                 },
                 {
-                    "Done",
+                    TaskStatusEnum.Done,
                     new KanbanColumnDto(
+                        TaskStatusEnum.Done,
                         "Done",
-                        "Done",
-                        tasks.Where(t => t.Status == "Done").Select(t => t.Id).ToList()
+                        tasks.Where(t => t.Status == TaskStatusEnum.Done).Select(t => t.Id).ToList()
                     )
                 },
             };
 
-            var columnOrder = new List<string> { "Todo", "InProgress", "Review", "Done" };
-
-            if (tasks.Count == 0)
+            var columnOrder = new List<TaskStatusEnum>()
             {
-                return Success(tasks, "No tasks assigned to this project yet.");
-            }
+                TaskStatusEnum.Todo,
+                TaskStatusEnum.InProgress,
+                TaskStatusEnum.Review,
+                TaskStatusEnum.Done,
+            };
 
             return Success(
                 new KanbanBoardDto(tasks, columns, columnOrder),

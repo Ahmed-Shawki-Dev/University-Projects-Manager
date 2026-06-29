@@ -2,24 +2,25 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { TaskDto } from "@/types/schema";
 
-const KanbanTaskCard = () => {
+interface IProps {
+  colTask: TaskDto;
+}
+
+const KanbanTaskCard = ({ colTask }: IProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
+        <CardTitle>{colTask.title}</CardTitle>
+        <CardDescription></CardDescription>
       </CardHeader>
       <CardContent>
-        <p>Card Content</p>
+        <p>{colTask.description}</p>
       </CardContent>
-      <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter>
     </Card>
   );
 };

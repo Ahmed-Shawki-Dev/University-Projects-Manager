@@ -1,12 +1,13 @@
 using backend.DTOs.Task;
+using backend.Models;
 
 namespace backend.DTOs
 {
-    public record KanbanColumnDto(string Id, string Title, List<Guid> TaskIds);
+    public record KanbanColumnDto(TaskStatusEnum Id, string Title, List<Guid> TaskIds);
 
     public record KanbanBoardDto(
         List<TaskDto> Tasks,
-        Dictionary<string, KanbanColumnDto> Columns,
-        List<string> columnsOrder
+        Dictionary<TaskStatusEnum, KanbanColumnDto> Columns,
+        List<TaskStatusEnum> ColumnsOrder
     );
 }

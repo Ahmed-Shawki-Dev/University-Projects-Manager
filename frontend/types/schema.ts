@@ -1,4 +1,4 @@
-export type TaskStatus = "Todo" | "InProgress" | "Review" | "Done";
+export type TaskStatusEnum = "Todo" | "InProgress" | "Review" | "Done";
 
 export interface FacultyDto {
   id: string;
@@ -34,7 +34,7 @@ export interface TaskDto {
   id: string;
   title: string;
   description: string;
-  status: TaskStatus;
+  status: TaskStatusEnum;
 }
 
 export interface KanbanColumnDto {
@@ -45,6 +45,6 @@ export interface KanbanColumnDto {
 
 export interface KanbanBoardDto {
   tasks: TaskDto[];
-  columns: Record<string, KanbanColumnDto>;
-  columnOrder: TaskStatus[];
+  columns: Record<TaskStatusEnum, KanbanColumnDto>;
+  columnsOrder: TaskStatusEnum[];
 }

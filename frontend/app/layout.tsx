@@ -36,7 +36,8 @@ export default function RootLayout({
         jakarta.variable,
       )}
     >
-      <body className="min-h-full flex flex-col">
+      <head />
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
