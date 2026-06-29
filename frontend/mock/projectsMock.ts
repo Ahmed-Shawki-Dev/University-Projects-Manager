@@ -1,6 +1,5 @@
 import { Database, FolderGit2, LayoutDashboard } from "lucide-react";
 
-// دي الـ Structure النظيفة اللي بكرة الباك إند هيرجع زيها بالظبط
 export interface SidebarProject {
   id: string;
   name: string;

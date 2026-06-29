@@ -27,3 +27,10 @@ export interface CreateUniversityDto {
 export interface UpdateUniversityDto {
   name: string;
 }
+
+export interface TaskDto {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+}
