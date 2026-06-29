@@ -1,3 +1,5 @@
+export type TaskStatus = "Todo" | "InProgress" | "Review" | "Done";
+
 export interface FacultyDto {
   id: string;
   name: string;
@@ -32,5 +34,17 @@ export interface TaskDto {
   id: string;
   title: string;
   description: string;
-  status: string;
+  status: TaskStatus;
+}
+
+export interface KanbanColumnDto {
+  id: string;
+  title: string;
+  taskIds: string[];
+}
+
+export interface KanbanBoardDto {
+  tasks: TaskDto[];
+  columns: Record<string, KanbanColumnDto>;
+  columnOrder: TaskStatus[];
 }

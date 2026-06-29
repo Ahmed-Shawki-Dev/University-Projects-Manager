@@ -10,9 +10,9 @@ export default function FacultyLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="flex flex-1 flex-col min-h-screen">
+      <main className="flex flex-1 flex-col min-h-screen ">
         <AppHeader />
-        <div className="flex-1 p-6">{children}</div>
+        <div className="flex-1 p-6 pt-20">{children}</div>
       </main>
     </SidebarProvider>
   );

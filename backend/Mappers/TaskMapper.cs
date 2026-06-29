@@ -6,7 +6,7 @@ namespace backend.Mappers
     {
         public static TaskDto ToDto(this backend.Models.Task task)
         {
-            return new TaskDto(task.Id, task.Title, task.Description, task.Status.ToString());
+            return new TaskDto(task.Id, task.Title, task.Description!, task.Status.ToString());
         }
     }
 }

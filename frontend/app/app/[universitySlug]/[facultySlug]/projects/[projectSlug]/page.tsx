@@ -1,6 +1,6 @@
 import KanbanBoard from "@/components/KanbanBoard";
 import { fetchApi } from "@/lib/fetchApi";
-import { TaskDto } from "@/types/schema";
+import { KanbanBoardDto } from "@/types/schema";
 
 const ProjectPage = async ({
   params,
@@ -12,13 +12,16 @@ const ProjectPage = async ({
   }>;
 }) => {
   const { universitySlug, facultySlug, projectSlug } = await params;
-  const res = await fetchApi<TaskDto[]>(
+  const res = await fetchApi<KanbanBoardDto>(
     `/api/universities/${universitySlug}/faculties/${facultySlug}/projects/${projectSlug}/tasks`,
   );
 
   console.log(res);
   return (
     <div>
+      {res.data?.tasks.map((task) => (
+        <div key={task.id}>{task.title}</div>
+      ))}
       <KanbanBoard />
     </div>
   );
