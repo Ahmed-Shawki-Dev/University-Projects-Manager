@@ -10,12 +10,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { mockProjects } from "@/mock/projectsMock";
+import { ProjectDto } from "@/types/schema";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ModeToggle } from "./ModeToggle";
 
-export function AppSidebar() {
+interface IProps {
+  projects: ProjectDto[];
+}
+
+export function AppSidebar({ projects }: IProps) {
   const params = useParams();
   const uni = params.universitySlug;
   const fac = params.facultySlug;
@@ -27,11 +31,10 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Projects</SidebarGroupLabel>
           <SidebarMenu>
-            {mockProjects.map((project) => (
+            {projects?.map((project) => (
               <SidebarMenuItem key={project.id}>
                 <SidebarMenuButton asChild>
-                  <Link href={`/app/${uni}/${fac}/${project.url}`}>
-                    <project.icon className="h-4 w-4" />
+                  <Link href={`/app/${uni}/${fac}/projects/${project.slug}`}>
                     <span>{project.name}</span>
                   </Link>
                 </SidebarMenuButton>

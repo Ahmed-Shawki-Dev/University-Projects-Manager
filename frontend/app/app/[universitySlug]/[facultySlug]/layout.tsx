@@ -1,15 +1,25 @@
 import AppHeader from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { fetchApi } from "@/lib/fetchApi";
+import { ProjectDto } from "@/types/schema";
 
-export default function FacultyLayout({
+export default async function FacultyLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ universitySlug: string; facultySlug: string }>;
 }) {
+  const { universitySlug, facultySlug } = await params;
+  const res = await fetchApi<ProjectDto[]>(
+    `/api/universities/${universitySlug}/faculties/${facultySlug}/projects`,
+  );
+  const projects = res?.data ?? [];
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar projects={projects} />
       <main className="flex flex-1 flex-col min-h-screen ">
         <AppHeader />
         <div className="flex-1 p-6 pt-20">{children}</div>
