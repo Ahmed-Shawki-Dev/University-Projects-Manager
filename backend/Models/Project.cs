@@ -23,5 +23,6 @@ namespace backend.Models
         public Faculty Faculty { get; set; } = null!;
 
         public List<Task> Tasks { get; set; } = new();
+        public List<Milestone> Milestones { get; set; } = new();
     }
 }

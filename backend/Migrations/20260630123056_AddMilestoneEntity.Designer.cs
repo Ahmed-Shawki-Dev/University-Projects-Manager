@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Data;
 
@@ -11,9 +12,11 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260630123056_AddMilestoneEntity")]
+    partial class AddMilestoneEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -236,8 +239,7 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Models.Milestone", "Milestone")
                         .WithMany("Tasks")
-                        .HasForeignKey("MilestoneId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("MilestoneId");
 
                     b.HasOne("backend.Models.Project", "Project")
                         .WithMany("Tasks")
