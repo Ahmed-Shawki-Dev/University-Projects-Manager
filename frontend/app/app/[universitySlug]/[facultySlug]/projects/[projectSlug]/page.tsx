@@ -16,6 +16,7 @@ const ProjectPage = async ({
     `/api/universities/${universitySlug}/faculties/${facultySlug}/projects/${projectSlug}/tasks`,
   );
 
+
   return (
     <div>
       <KanbanBoard
