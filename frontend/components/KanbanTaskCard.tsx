@@ -13,7 +13,7 @@ interface IProps {
   idx: number;
 }
 
-const KanbanTaskCard = ({ colTask ,idx}: IProps) => {
+const KanbanTaskCard = ({ colTask, idx }: IProps) => {
   return (
     <Draggable key={colTask.id} draggableId={colTask.id} index={idx}>
       {(provided) => (
