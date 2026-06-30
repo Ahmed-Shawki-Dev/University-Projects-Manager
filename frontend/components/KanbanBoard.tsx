@@ -1,3 +1,4 @@
+"use client";
 import { KanbanColumnDto, TaskDto, TaskStatusEnum } from "@/types/schema";
 import KanbanColumn from "./KanbanColumn";
 

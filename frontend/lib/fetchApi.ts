@@ -3,10 +3,13 @@ import { ApiResponse } from "@/types/api";
 
 const baseUrl = process.env.SERVER_URL;
 
-export async function fetchApi<T>(endpoint: string): Promise<ApiResponse<T>> {
+export async function fetchApi<T>(
+  endpoint: string,
+  options?: RequestInit,
+): Promise<ApiResponse<T>> {
   try {
     const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
-    const res = await fetch(`${baseUrl}${cleanEndpoint}`);
+    const res = await fetch(`${baseUrl}${cleanEndpoint}`, options);
 
     let responseData: Partial<ApiResponse<T>> | null = null;
     try {

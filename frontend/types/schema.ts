@@ -1,4 +1,9 @@
-export type TaskStatusEnum = "Todo" | "InProgress" | "Review" | "Done";
+export enum TaskStatusEnum {
+  Todo = "Todo",
+  InProgress = "InProgress",
+  Review = "Review",
+  Done = "Done",
+}
 
 export interface FacultyDto {
   id: string;
@@ -34,6 +39,10 @@ export interface TaskDto {
   id: string;
   title: string;
   description: string;
+  status: TaskStatusEnum;
+}
+
+export interface UpdateTaskStatusDto {
   status: TaskStatusEnum;
 }
 
