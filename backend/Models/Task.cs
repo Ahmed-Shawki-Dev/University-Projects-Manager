@@ -17,5 +17,8 @@ namespace backend.Models
         public TaskStatusEnum Status { get; set; }
         public Guid ProjectId { get; set; }
         public Project Project { get; set; } = null!;
+
+        public Guid? MilestoneId { get; set; }
+        public Milestone? Milestone { get; set; }
     }
 }
