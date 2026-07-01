@@ -1,6 +1,11 @@
 "use client";
 import { updateTaskStatus } from "@/action/task/updateTaskStatus";
-import { KanbanColumnDto, TaskDto, TaskStatusEnum } from "@/types/schema";
+import {
+  KanbanColumnDto,
+  MilestoneDto,
+  TaskDto,
+  TaskStatusEnum,
+} from "@/types/schema";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { useOptimistic, useTransition } from "react";
 import KanbanColumn from "./KanbanColumn";
@@ -9,9 +14,10 @@ interface IProps {
   columns: Record<TaskStatusEnum, KanbanColumnDto>;
   columnsOrder: TaskStatusEnum[];
   tasks: TaskDto[];
+  milestones?: MilestoneDto[];
 }
 
-const KanbanBoard = ({ columnsOrder, columns, tasks }: IProps) => {
+const KanbanBoard = ({ columnsOrder, columns, tasks, milestones }: IProps) => {
   const [isPending, startTransition] = useTransition();
 
   const [optimisticColumns, setOptimisticColumns] = useOptimistic(
@@ -72,6 +78,7 @@ const KanbanBoard = ({ columnsOrder, columns, tasks }: IProps) => {
               col={optimisticColumns[col]}
               colTasks={colTasks}
               key={col}
+              milestones={milestones}
             />
           );
         })}

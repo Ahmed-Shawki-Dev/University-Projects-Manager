@@ -14,7 +14,7 @@ namespace backend.Models
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public TaskStatusEnum Status { get; set; }
+        public TaskStatusEnum Status { get; set; } = TaskStatusEnum.Todo;
         public Guid ProjectId { get; set; }
         public Project Project { get; set; } = null!;
 

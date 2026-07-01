@@ -1,6 +1,6 @@
 import KanbanBoard from "@/components/KanbanBoard";
 import { fetchApi } from "@/lib/fetchApi";
-import { KanbanBoardDto } from "@/types/schema";
+import { KanbanBoardDto, MilestoneDto } from "@/types/schema";
 
 const ProjectPage = async ({
   params,
@@ -12,17 +12,29 @@ const ProjectPage = async ({
   }>;
 }) => {
   const { universitySlug, facultySlug, projectSlug } = await params;
-  const res = await fetchApi<KanbanBoardDto>(
+
+  const boardPromise = fetchApi<KanbanBoardDto>(
     `/api/universities/${universitySlug}/faculties/${facultySlug}/projects/${projectSlug}/tasks`,
   );
 
+  const milestonesPromise = fetchApi<MilestoneDto[]>(
+    `/api/universities/${universitySlug}/faculties/${facultySlug}/projects/${projectSlug}/milestones`,
+  );
+
+  const [boardRes, milestonesRes] = await Promise.all([
+    boardPromise,
+    milestonesPromise,
+  ]);
+
+  console.log(milestonesRes);
 
   return (
     <div>
       <KanbanBoard
-        columns={res?.data?.columns ?? []}
-        columnsOrder={res?.data?.columnsOrder ?? []}
-        tasks={res?.data?.tasks ?? []}
+        columns={boardRes?.data?.columns ?? []}
+        columnsOrder={boardRes?.data?.columnsOrder ?? []}
+        tasks={boardRes?.data?.tasks ?? []}
+        milestones={milestonesRes?.data ?? []}
       />
     </div>
   );
