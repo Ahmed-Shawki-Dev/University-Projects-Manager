@@ -13,7 +13,7 @@ namespace backend.DTOs.Task
     public record CreateTaskDto(
         string Title,
         string? Description,
-        TaskStatusEnum Status,
+        // TaskStatusEnum Status,
         Guid? MilestoneId
     );
 

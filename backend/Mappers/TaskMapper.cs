@@ -21,7 +21,7 @@ namespace backend.Mappers
             {
                 Title = task.Title,
                 Description = task.Description!,
-                Status = task.Status,
+                // Status = task.Status,
                 MilestoneId = task.MilestoneId,
             };
         }

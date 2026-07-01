@@ -120,9 +120,10 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
   }
   body {
-    @apply bg-background text-foreground min-h-screen ;
+    @apply bg-background text-foreground min-h-screen;
   }
   html {
     @apply font-sans;
