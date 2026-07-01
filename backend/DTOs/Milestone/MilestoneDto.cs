@@ -14,6 +14,7 @@ namespace backend.DTOs.Milestone
         string Title,
         string? Description,
         decimal MaxGrade,
+        DateTime StartDate,
         DateTime DueDate
     );
 }

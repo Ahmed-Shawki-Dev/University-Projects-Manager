@@ -98,6 +98,18 @@ namespace backend.Controllers
             );
         }
 
+        // ** Get Task By Id
+        [HttpGet("/api/tasks/{taskId}")]
+        public async Task<IActionResult> GetById(Guid taskId)
+        {
+            var task = await context.Tasks.FindAsync(taskId);
+            if (task == null)
+            {
+                return CustomNotFound("Task Not Found", []);
+            }
+            return Success(task.ToDto(), "Task Retrieved Successfully");
+        }
+
         // ** Update Task Status
         [HttpPut("/api/tasks/{taskId}/status")]
         public async Task<IActionResult> UpdateStatus(
@@ -114,6 +126,61 @@ namespace backend.Controllers
             await context.SaveChangesAsync();
 
             return Success(task.ToDto(), "Status Changed Successfully");
+        }
+
+        // ** Create Task
+        [HttpPost(
+            "/api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}/tasks"
+        )]
+        public async Task<IActionResult> CreateTask(
+            [FromRoute] string universitySlug,
+            [FromRoute] string facultySlug,
+            [FromRoute] string projectSlug,
+            [FromBody] CreateTaskDto task
+        )
+        {
+            var project = await context.Projects.FirstOrDefaultAsync(p =>
+                p.Faculty.University.Slug == universitySlug
+                && p.Faculty.Slug == facultySlug
+                && p.Slug == projectSlug
+            );
+
+            if (project == null)
+            {
+                return CustomNotFound("Project Not Found", []);
+            }
+
+            if (task.MilestoneId.HasValue)
+            {
+                var milestoneExists = await context.Milestones.AnyAsync(m =>
+                    m.Id == task.MilestoneId.Value && m.ProjectId == project.Id
+                );
+                if (!milestoneExists)
+                {
+                    return CustomBadRequest(
+                        "The specified Milestone does not exist or does not belong to this project.",
+                        []
+                    );
+                }
+            }
+
+            var taskModel = task.ToModel();
+            taskModel.ProjectId = project.Id;
+
+            context.Tasks.Add(taskModel);
+            await context.SaveChangesAsync();
+
+            return CustomCreateAtAction(
+                nameof(GetById),
+                new
+                {
+                    universitySlug,
+                    facultySlug,
+                    taskId = taskModel.Id,
+                },
+                taskModel.ToDto(),
+                "Task Created Successfully"
+            );
         }
     }
 }
