@@ -10,9 +10,20 @@ public static class ProjectMapper
         return new ProjectDto(
             project.Id,
             project.Name,
-            project.Description,
+            project.Description!,
             project.Slug,
-            project.Type.ToString() 
+            project.Type
         );
+    }
+
+    public static Project ToModel(this CreateProjectDto projectDto)
+    {
+        return new Project
+        {
+            Name = projectDto.Name,
+            Description = projectDto.Description,
+            Slug = projectDto.Slug,
+            Type = projectDto.Type,
+        };
     }
 }
