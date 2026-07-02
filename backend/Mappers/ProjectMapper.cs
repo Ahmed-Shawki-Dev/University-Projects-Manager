@@ -22,7 +22,8 @@ public static class ProjectMapper
         {
             Name = projectDto.Name,
             Description = projectDto.Description,
-            Slug = projectDto.Slug,
+            TotalProjectGrade = projectDto.TotalProjectGrade,
+            Deadline = projectDto.Deadline,
             Type = projectDto.Type,
         };
     }

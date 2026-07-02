@@ -52,8 +52,9 @@ export interface ProjectDto {
 
 export interface CreateProjectDto {
   name: string;
-  description: string;
-  slug: string;
+  description?: string;
+  totalProjectGrade: number;
+  deadline: string;
   type: ProjectType;
 }
 

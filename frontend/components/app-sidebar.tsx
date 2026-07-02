@@ -1,5 +1,5 @@
 "use client";
-import AddProject from "@/app/app/[universitySlug]/[facultySlug]/projects/AddProject";
+import AddProject from "@/app/app/[universitySlug]/[facultySlug]/projects/CreateProjectModal";
 import {
   Sidebar,
   SidebarContent,

@@ -10,5 +10,11 @@ namespace backend.DTOs.Project
         ProjectType Type
     );
 
-    public record CreateProjectDto(string Name, string Description, string Slug, ProjectType Type);
+    public record CreateProjectDto(
+        string Name,
+        string Description,
+        decimal TotalProjectGrade,
+        DateTime Deadline,
+        ProjectType Type
+    );
 }
