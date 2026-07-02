@@ -1,4 +1,5 @@
 "use client";
+import AddProject from "@/app/app/[universitySlug]/[facultySlug]/projects/AddProject";
 import {
   Sidebar,
   SidebarContent,
@@ -29,17 +30,26 @@ export function AppSidebar({ projects }: IProps) {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Projects</SidebarGroupLabel>
+          <SidebarGroupLabel className="flex justify-between">
+            <p>Projects</p>
+            <AddProject />
+          </SidebarGroupLabel>
           <SidebarMenu>
-            {projects?.map((project) => (
-              <SidebarMenuItem key={project.id}>
-                <SidebarMenuButton asChild>
-                  <Link href={`/app/${uni}/${fac}/projects/${project.slug}`}>
-                    <span>{project.name}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            {!projects || projects.length === 0 ? (
+              <div className="px-4 py-2 text-sm text-muted-foreground">
+                No Projects Yet
+              </div>
+            ) : (
+              projects?.map((project) => (
+                <SidebarMenuItem key={project.id}>
+                  <SidebarMenuButton>
+                    <Link href={`/app/${uni}/${fac}/projects/${project.slug}`}>
+                      <span>{project.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))
+            )}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
