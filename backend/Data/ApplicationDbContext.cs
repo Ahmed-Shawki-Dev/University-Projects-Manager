@@ -13,6 +13,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<Project> Projects { get; set; }
     public DbSet<Milestone> Milestones { get; set; }
     public DbSet<backend.Models.Task> Tasks { get; set; }
+    public DbSet<Student> Students { get; set; }
+    public DbSet<Team> Teams { get; set; }
+    public DbSet<StudentTeam> StudentTeams { get; set; }
+    public DbSet<StudentGrade> StudentGrades { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,7 +24,7 @@ public class ApplicationDbContext : DbContext
 
         //* Unique Slug
         modelBuilder.Entity<University>().HasIndex(u => u.Slug).IsUnique();
-
+        modelBuilder.Entity<Student>().HasIndex(s => s.StudentCode).IsUnique();
         modelBuilder.Entity<Faculty>().HasIndex(f => new { f.UniversityId, f.Slug }).IsUnique();
         modelBuilder.Entity<Project>().HasIndex(p => new { p.FacultyId, p.Slug }).IsUnique();
 
@@ -31,13 +35,51 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(m => m.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
 
-
         modelBuilder
             .Entity<backend.Models.Task>()
             .HasOne(t => t.Milestone)
             .WithMany(m => m.Tasks)
             .HasForeignKey(t => t.MilestoneId)
-            .OnDelete(DeleteBehavior.NoAction); 
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder
+            .Entity<Team>()
+            .HasOne(t => t.Project)
+            .WithOne(p => p.Team)
+            .HasForeignKey<Team>(t => t.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<StudentTeam>()
+            .HasOne(st => st.Team)
+            .WithMany(t => t.StudentTeams)
+            .HasForeignKey(st => st.TeamId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<StudentTeam>()
+            .HasOne(st => st.Student)
+            .WithMany(s => s.StudentTeams)
+            .HasForeignKey(st => st.StudentId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder
+            .Entity<StudentGrade>()
+            .HasOne(sg => sg.Milestone)
+            .WithMany(m => m.StudentGrades)
+            .HasForeignKey(sg => sg.MilestoneId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<StudentGrade>()
+            .HasOne(sg => sg.Student)
+            .WithMany(s => s.StudentGrades)
+            .HasForeignKey(sg => sg.StudentId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<StudentTeam>().HasKey(st => new { st.StudentId, st.TeamId });
+
+        modelBuilder.Entity<StudentGrade>().HasKey(sg => new { sg.StudentId, sg.MilestoneId });
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

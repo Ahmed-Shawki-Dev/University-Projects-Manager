@@ -10,5 +10,6 @@ namespace backend.Models
         public University University { get; set; } = null!;
 
         public List<Project> Projects { get; set; } = new List<Project>();
+        public List<Student> Students { get; set; } = new List<Student>();
     }
 }
