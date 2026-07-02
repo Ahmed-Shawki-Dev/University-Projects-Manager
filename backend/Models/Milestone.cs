@@ -7,6 +7,7 @@ namespace backend.Models
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
+
         [Column(TypeName = "decimal(5,2)")]
         public decimal MaxGrade { get; set; }
         public DateTime StartDate { get; set; }
@@ -16,5 +17,7 @@ namespace backend.Models
         public Project? Project { get; set; }
 
         public List<Task> Tasks { get; set; } = new();
+
+        public List<StudentGrade> StudentGrades { get; set; } = new();
     }
 }

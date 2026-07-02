@@ -17,13 +17,15 @@ namespace backend.Models
         public string? Description { get; set; }
         public string Slug { get; set; } = string.Empty;
         public DateTime? Deadline { get; set; }
+
         [Column(TypeName = "decimal(5,2)")]
         public decimal TotalProjectGrade { get; set; }
         public ProjectType Type { get; set; }
-        public bool IsGroupProject { get; set; } = false;
 
         public Guid FacultyId { get; set; }
         public Faculty Faculty { get; set; } = null!;
+
+        public virtual Team? Team { get; set; }
 
         public List<Task> Tasks { get; set; } = new();
         public List<Milestone> Milestones { get; set; } = new();
