@@ -1,5 +1,6 @@
 import AppHeader from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
+import EmptyProjects from "@/components/EmptyProjects";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { fetchApi } from "@/lib/fetchApi";
 import { ProjectDto } from "@/types/schema";
@@ -22,7 +23,9 @@ export default async function FacultyLayout({
       <AppSidebar projects={projects} />
       <main className="flex flex-1 flex-col min-h-screen ">
         <AppHeader />
-        <div className="flex-1 p-6 pt-20">{children}</div>
+        <div className="flex-1 p-6 pt-20 ">
+          {projects.length == 0 ? <EmptyProjects /> : children}
+        </div>
       </main>
     </SidebarProvider>
   );
