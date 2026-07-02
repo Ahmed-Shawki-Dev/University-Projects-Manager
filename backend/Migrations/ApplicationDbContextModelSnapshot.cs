@@ -120,6 +120,9 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<decimal>("TotalProjectGrade")
+                        .HasColumnType("decimal(5,2)");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 

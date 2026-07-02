@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace backend.Models
 {
     public enum ProjectType
@@ -15,6 +17,7 @@ namespace backend.Models
         public string? Description { get; set; }
         public string Slug { get; set; } = string.Empty;
         public DateTime? Deadline { get; set; }
+        [Column(TypeName = "decimal(5,2)")]
         public decimal TotalProjectGrade { get; set; }
         public ProjectType Type { get; set; }
         public bool IsGroupProject { get; set; } = false;
