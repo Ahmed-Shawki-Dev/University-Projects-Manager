@@ -182,5 +182,54 @@ namespace backend.Controllers
                 "Task Created Successfully"
             );
         }
+
+        // ** Delete Task
+        [HttpDelete("/api/tasks/{taskId}")]
+        public async Task<IActionResult> RemoveTask(Guid taskId)
+        {
+            var task = await context.Tasks.FindAsync(taskId);
+            if (task == null)
+            {
+                return CustomNotFound("Task Not Found", []);
+            }
+
+            context.Tasks.Remove(task);
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        // ** Update Task
+        [HttpPut("/api/tasks/{taskId}")]
+        public async Task<IActionResult> UpdateTask(
+            Guid taskId,
+            [FromBody] UpdateTaskDto updateTask
+        )
+        {
+            var taskModel = await context.Tasks.FindAsync(taskId);
+            if (taskModel == null)
+            {
+                return CustomNotFound("Task Not Found", []);
+            }
+
+            taskModel.Title = updateTask.Title;
+            taskModel.Description = updateTask.Description;
+
+            if (updateTask.MilestoneId.HasValue)
+            {
+                var isMilestoneExist = await context.Milestones.AnyAsync(m =>
+                    m.Id == updateTask.MilestoneId.Value
+                );
+
+                if (!isMilestoneExist)
+                {
+                    return CustomBadRequest("The specified Milestone does not exist.", []);
+                }
+            }
+            taskModel.MilestoneId = updateTask.MilestoneId;
+
+            await context.SaveChangesAsync();
+
+            return Success(taskModel.ToDto(), "Task Updated Successfully");
+        }
     }
 }
