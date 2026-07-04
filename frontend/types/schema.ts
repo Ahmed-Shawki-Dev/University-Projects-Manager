@@ -89,6 +89,11 @@ export interface CreateTaskDto {
   description: string | null;
   milestoneId: string | null;
 }
+export interface UpdateTaskDto {
+  title: string;
+  description: string | null;
+  milestoneId: string | null;
+}
 
 export interface UpdateTaskStatusDto {
   status: TaskStatusEnum;

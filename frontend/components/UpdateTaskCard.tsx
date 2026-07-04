@@ -1,16 +1,10 @@
 "use client";
-import { createTask } from "@/action/task/createTask";
-import {
-  CreateTaskDto,
-  MilestoneDto,
-  ProjectRouteParams,
-} from "@/types/schema";
-import { addTaskSchema } from "@/validation/tasks";
+import { updateTask } from "@/action/task/updateTask";
+import { MilestoneDto, TaskDto, UpdateTaskDto } from "@/types/schema";
+import { addTaskSchema, UpdateTaskType } from "@/validation/tasks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams } from "next/navigation";
-import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import z from "zod";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Field, FieldError } from "./ui/field";
@@ -24,19 +18,27 @@ import {
   SelectValue,
 } from "./ui/select";
 
-const AddTaskCard = ({ milestones }: { milestones: MilestoneDto[] }) => {
-  const { universitySlug, facultySlug, projectSlug } = useParams();
-  const [showCard, setShowCard] = useState(false);
-  const form = useForm<z.infer<typeof addTaskSchema>>({
+const UpdateTaskCard = ({
+  milestones,
+  currentTask,
+  taskId,
+  onClose,
+}: {
+  currentTask: TaskDto;
+  milestones: MilestoneDto[];
+  taskId: string;
+  onClose: () => void;
+}) => {
+  const form = useForm<UpdateTaskType>({
     resolver: zodResolver(addTaskSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      milestoneId: "",
+      title: currentTask.title || "",
+      description: currentTask.description || "",
+      milestoneId: currentTask.milestoneId || "",
     },
   });
 
-  const onSubmitHandler = async (data: z.infer<typeof addTaskSchema>) => {
+  const onSubmitHandler = async (data: UpdateTaskType) => {
     try {
       const payload = {
         ...data,
@@ -46,35 +48,23 @@ const AddTaskCard = ({ milestones }: { milestones: MilestoneDto[] }) => {
             : data.milestoneId,
       };
 
-      const res = await createTask(
-        payload as CreateTaskDto,
-        { universitySlug, facultySlug, projectSlug } as ProjectRouteParams,
-      );
+      const res = await updateTask(taskId, payload as unknown as UpdateTaskDto);
 
       if (res.isSuccess) {
+        toast.success(res.message || "Task Updated Successfully");
         form.reset();
+        onClose();
       }
     } catch {
-      form.reset();
+      toast.error("Server Error");
     }
   };
 
   return (
-    <Card
-      className={`w-full max-w-md p-0  ${showCard && "p-6"} shadow-none transition-all duration-300`}
-    >
+    <Card className="w-full max-w-md p-6 shadow-none animate-in fade-in-50 zoom-in-95 duration-200">
       <form
         onSubmit={form.handleSubmit(onSubmitHandler)}
         className="grid gap-4"
-        onFocus={() => setShowCard(true)}
-        onBlur={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-            if (form.getValues("title").trim() === "") {
-              setShowCard(false);
-              form.reset();
-            }
-          }
-        }}
       >
         <Controller
           name="title"
@@ -87,14 +77,8 @@ const AddTaskCard = ({ milestones }: { milestones: MilestoneDto[] }) => {
                 aria-invalid={fieldState.invalid}
                 placeholder="Title"
                 autoComplete="off"
-                className={`${!showCard && "border-none"}`}
               />
-              {fieldState.invalid && (
-                <FieldError
-                  errors={[fieldState.error]}
-                  className={`${!showCard && "hidden"}`}
-                />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -103,10 +87,7 @@ const AddTaskCard = ({ milestones }: { milestones: MilestoneDto[] }) => {
           name="description"
           control={form.control}
           render={({ field, fieldState }) => (
-            <Field
-              data-invalid={fieldState.invalid}
-              className={`hidden gap-1.5 ${showCard && "grid"}`}
-            >
+            <Field data-invalid={fieldState.invalid} className={`gap-1.5`}>
               <Input
                 {...field}
                 id={field.name}
@@ -123,10 +104,7 @@ const AddTaskCard = ({ milestones }: { milestones: MilestoneDto[] }) => {
           name="milestoneId"
           control={form.control}
           render={({ field, fieldState }) => (
-            <Field
-              data-invalid={fieldState.invalid}
-              className={`hidden gap-1.5 ${showCard && "grid"}`}
-            >
+            <Field data-invalid={fieldState.invalid} className={`gap-1.5`}>
               <Select
                 name={field.name}
                 value={field.value ?? ""}
@@ -149,11 +127,18 @@ const AddTaskCard = ({ milestones }: { milestones: MilestoneDto[] }) => {
             </Field>
           )}
         />
+        <div className="flex items-center gap-2">
+          <Button type="submit" className="flex-1">
+            Update Task
+          </Button>
 
-        <Button className={`hidden ${showCard && "grid"}`}>Create Task</Button>
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        </div>
       </form>
     </Card>
   );
 };
 
-export default AddTaskCard;
+export default UpdateTaskCard;
