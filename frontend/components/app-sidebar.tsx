@@ -42,11 +42,11 @@ export function AppSidebar({ projects }: IProps) {
             ) : (
               projects?.map((project) => (
                 <SidebarMenuItem key={project.id}>
-                  <SidebarMenuButton>
-                    <Link href={`/app/${uni}/${fac}/projects/${project.slug}`}>
+                  <Link href={`/app/${uni}/${fac}/projects/${project.slug}`}>
+                    <SidebarMenuButton className="cursor-pointer">
                       <span>{project.name}</span>
-                    </Link>
-                  </SidebarMenuButton>
+                    </SidebarMenuButton>
+                  </Link>
                 </SidebarMenuItem>
               ))
             )}
