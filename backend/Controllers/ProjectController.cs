@@ -1,6 +1,8 @@
 using backend.Data;
 using backend.DTOs.Project;
 using backend.Mappers;
+using backend.Models;
+using backend.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,12 +59,14 @@ namespace backend.Controllers
             [FromBody] CreateProjectDto projectDto
         )
         {
+            string generatedSlug = SlugHelper.GenerateSlug(projectDto.Name);
+
             var isProjectExist = await context
                 .Projects.AsQueryable()
                 .AnyAsync(p =>
                     p.Faculty.University.Slug == universitySlug
                     && p.Faculty.Slug == facultySlug
-                    && p.Slug == projectDto.Slug
+                    && p.Slug == generatedSlug
                 );
 
             if (isProjectExist)
@@ -76,9 +80,23 @@ namespace backend.Controllers
                 .FirstOrDefaultAsync();
 
             var projectModel = projectDto.ToModel();
-            projectModel.FacultyId = facultyId!.Value;
 
-            context.Add(projectModel);
+            if (facultyId == null)
+            {
+                return CustomBadRequest("The specified Faculty or University does not exist.", []);
+            }
+
+            projectModel.FacultyId = facultyId.Value;
+            projectModel.Slug = generatedSlug;
+
+            context.Projects.Add(projectModel);
+
+            Team teamModel = new Team();
+            teamModel.Name = projectModel.Name;
+            teamModel.Project = projectModel;
+
+            context.Teams.Add(teamModel);
+
             await context.SaveChangesAsync();
 
             return CustomCreateAtAction(
