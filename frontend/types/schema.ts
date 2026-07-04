@@ -135,5 +135,5 @@ export const statusStyles: Record<
 export interface ProjectRouteParams {
   universitySlug: string;
   facultySlug: string;
-  projectSlug: string;
+  projectSlug?: string;
 }

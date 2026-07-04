@@ -1,3 +1,5 @@
+"use client";
+import { createProject } from "@/action/project/createProject";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -22,14 +24,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProjectType } from "@/types/schema";
+import {
+  CreateProjectDto,
+  ProjectRouteParams,
+  ProjectType,
+} from "@/types/schema";
 import { CreateProjectSchema, ProjectSchemaType } from "@/validation/project";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, Plus } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function CreateProjectModal() {
+  const [open, setOpen] = useState(false);
+  const { universitySlug, facultySlug } = useParams();
   const form = useForm({
     resolver: zodResolver(CreateProjectSchema),
     defaultValues: {
@@ -42,12 +53,31 @@ export default function CreateProjectModal() {
   });
 
   const onSubmit = async (data: ProjectSchemaType) => {
-    console.log(data);
+    try {
+      const res = await createProject(
+        data as unknown as CreateProjectDto,
+        { universitySlug, facultySlug } as ProjectRouteParams,
+      );
+
+      if (res.isSuccess) {
+        toast.success(res.message || "Project Created Successfully");
+        form.reset();
+        setOpen(false);
+      } else {
+        form.setError("root", {
+          message: res.message || "Something went wrong",
+        });
+        toast.error(res.message);
+      }
+    } catch {
+      form.setError("root", { message: "Network error, please try again." });
+      toast.error("Network error, please try again.");
+    }
   };
 
   return (
-    <Dialog>
-      <DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button variant={"ghost"} size={"sm"}>
           <Plus />
           New
