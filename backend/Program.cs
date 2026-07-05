@@ -46,7 +46,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 // Auth Config
 builder
-    .Services.AddIdentity<AppUser, IdentityRole>()
+    .Services.AddIdentity<AppUser, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder
@@ -80,10 +80,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseHttpsRedirection();
 app.Run();
