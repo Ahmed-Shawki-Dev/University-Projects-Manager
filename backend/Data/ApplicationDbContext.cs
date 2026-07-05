@@ -1,9 +1,11 @@
 ﻿using backend.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Data;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }
@@ -80,6 +82,13 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<StudentTeam>().HasKey(st => new { st.StudentId, st.TeamId });
 
         modelBuilder.Entity<StudentGrade>().HasKey(sg => new { sg.StudentId, sg.MilestoneId });
+
+        modelBuilder
+            .Entity<AppUser>()
+            .HasOne(u => u.Student)
+            .WithOne(s => s.User)
+            .HasForeignKey<Student>(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

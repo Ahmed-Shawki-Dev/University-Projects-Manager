@@ -15,5 +15,9 @@ namespace backend.Models
 
         // StudentGrade
         public List<StudentGrade> StudentGrades { get; set; } = new();
+
+        // Auth System
+        public Guid UserId { get; set; }
+        public AppUser User { get; set; } = null!;
     }
 }
