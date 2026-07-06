@@ -27,6 +27,13 @@ export interface PagedResponse<T> extends ApiResponse<T> {
   hasNext: boolean;
 }
 
+export interface RegisterDto {
+  email: string;
+  fullName: string;
+  studentCode: string;
+  password: string;
+}
+
 // 3. Infrastructure Types
 export interface UniversityDto {
   id: string;
