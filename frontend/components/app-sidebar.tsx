@@ -1,5 +1,5 @@
 "use client";
-import AddProject from "@/app/app/[universitySlug]/[facultySlug]/projects/CreateProjectModal";
+import CreateProjectModal from "@/app/app/[universitySlug]/[facultySlug]/(dashboard)/projects/CreateProjectModal";
 import {
   Sidebar,
   SidebarContent,
@@ -32,7 +32,7 @@ export function AppSidebar({ projects }: IProps) {
         <SidebarGroup>
           <SidebarGroupLabel className="flex justify-between">
             <p>Projects</p>
-            <AddProject />
+            <CreateProjectModal />
           </SidebarGroupLabel>
           <SidebarMenu>
             {!projects || projects.length === 0 ? (
