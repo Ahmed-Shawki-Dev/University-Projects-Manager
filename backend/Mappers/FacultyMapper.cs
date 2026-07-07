@@ -1,3 +1,4 @@
+using backend.DTOs;
 using backend.DTOs.Faculty;
 using backend.Models;
 
@@ -23,6 +24,26 @@ namespace backend.Mappers
                 Id = faculty.Id,
                 Slug = faculty.Slug,
                 UniversityId = faculty.UniversityId,
+            };
+        }
+
+        public static FacultyDto ToFacultyWithUniversityDto(this Faculty faculty)
+        {
+            return new FacultyDto
+            {
+                Name = faculty.Name,
+                Id = faculty.Id,
+                Slug = faculty.Slug,
+                UniversityId = faculty.UniversityId,
+                University =
+                    faculty.University != null
+                        ? new UniversityDto
+                        {
+                            Id = faculty.University.Id,
+                            Name = faculty.University.Name,
+                            Slug = faculty.University.Slug,
+                        }
+                        : null,
             };
         }
     }

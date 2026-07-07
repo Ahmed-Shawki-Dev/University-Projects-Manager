@@ -40,12 +40,14 @@ namespace backend.Controllers
             {
                 return CustomNotFound("University Not Found", []);
             }
-            var faculty = await context.Faculties.FirstOrDefaultAsync(f => f.Slug == facultySlug);
+            var faculty = await context
+                .Faculties.Include(f => f.University)
+                .FirstOrDefaultAsync(f => f.Slug == facultySlug);
             if (faculty == null)
             {
                 return CustomNotFound("University Not Found", []);
             }
-            return Success(faculty.ToDto(), "Faculty Retrieved Successfully");
+            return Success(faculty.ToFacultyWithUniversityDto(), "Faculty Retrieved Successfully");
         }
 
         // Add Faculty To University
@@ -119,6 +121,24 @@ namespace backend.Controllers
             context.Faculties.Remove(facultyModel);
             await context.SaveChangesAsync();
             return NoContent();
+        }
+
+        // ** Get Layout Details && Check Slugs
+        [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/layout-details")]
+        public async Task<IActionResult> GetLayoutDetails(string universitySlug, string facultySlug)
+        {
+            var data = await context
+                .Faculties.Include(f => f.University)
+                .FirstOrDefaultAsync(f =>
+                    f.Slug == facultySlug && f.University.Slug == universitySlug
+                );
+
+            if (data == null)
+            {
+                return CustomNotFound("The University or faculty not found", []);
+            }
+
+            return Success(data.ToFacultyWithUniversityDto(), "Data Retrieved Successfully");
         }
     }
 }

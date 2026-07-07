@@ -5,6 +5,7 @@ namespace backend.DTOs.Faculty
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Slug { get; set; } = string.Empty;
-        public Guid UniversityId { get; set; }
+        public Guid? UniversityId { get; set; }
+        public UniversityDto? University { get; set; }
     }
 }
