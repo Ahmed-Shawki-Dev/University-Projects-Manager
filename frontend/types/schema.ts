@@ -34,6 +34,16 @@ export interface RegisterDto {
   password: string;
 }
 
+export interface UserLoginDto {
+  email: string;
+  password: string;
+}
+
+export interface UserLoginResponseDto {
+  user: UserLoginDto;
+  token: string;
+}
+
 // 3. Infrastructure Types
 export interface UniversityDto {
   id: string;
