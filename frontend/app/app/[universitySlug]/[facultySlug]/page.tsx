@@ -1,5 +1,14 @@
-const ProjectsPage = () => {
-  return <div>page</div>;
-};
+import { redirect } from "next/navigation";
 
-export default ProjectsPage;
+interface PageProps {
+  params: Promise<{
+    universitySlug: string;
+    facultySlug: string;
+  }>;
+}
+
+export default async function FacultyRootPage({ params }: PageProps) {
+  const { universitySlug, facultySlug } = await params;
+
+  redirect(`/app/${universitySlug}/${facultySlug}/projects`);
+}
