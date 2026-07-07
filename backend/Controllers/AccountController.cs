@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using backend.Data;
 using backend.DTOs.User;
 using backend.Models;
+using backend.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +10,11 @@ using Microsoft.EntityFrameworkCore;
 namespace backend.Controllers
 {
     [Route("api/auth")]
-    public class AccountController(UserManager<AppUser> userManager, ApplicationDbContext context)
-        : BaseApiController
+    public class AccountController(
+        UserManager<AppUser> userManager,
+        ApplicationDbContext context,
+        TokenService tokenService
+    ) : BaseApiController
     {
         // ** Register Student API
         [HttpPost("register/{universitySlug}/{facultySlug}/student")]
@@ -85,6 +90,55 @@ namespace backend.Controllers
             {
                 await transaction.RollbackAsync();
                 return CustomBadRequest("An unexpected error occurred during registration.", []);
+            }
+        }
+
+        // Login Controller
+        [HttpPost("login/{universitySlug}/{facultySlug}")]
+        public async Task<IActionResult> MyMethodAsync(
+            string universitySlug,
+            string facultySlug,
+            [FromBody] UserLoginDto userLogin
+        )
+        {
+            var user = await userManager.FindByEmailAsync(userLogin.Email);
+            if (user == null)
+            {
+                return CustomUnauthorized("The email or password is wrong.");
+            }
+
+            if (await userManager.CheckPasswordAsync(user, userLogin.Password))
+            {
+                var student = await context
+                    .Students.Include(s => s.Faculty)
+                        .ThenInclude(f => f!.University)
+                    .FirstOrDefaultAsync(s =>
+                        s.UserId == user.Id
+                        && s.Faculty!.Slug == facultySlug
+                        && s.Faculty.University.Slug == universitySlug
+                    );
+
+                if (student == null)
+                {
+                    return CustomBadRequest(
+                        "You are not registered in this faculty/university.",
+                        []
+                    );
+                }
+                var authClaims = new List<Claim>
+                {
+                    new Claim("fullName", user.FullName),
+                    new Claim("email", user.Email!),
+                    new Claim("studentCode", student.StudentCode),
+                };
+
+                var token = tokenService.GenerateToken(authClaims);
+
+                return Success(new { user = userLogin, token }, "Welcome");
+            }
+            else
+            {
+                return CustomUnauthorized("The email or password is wrong.");
             }
         }
     }

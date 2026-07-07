@@ -63,5 +63,18 @@ namespace backend.Controllers
                 }
             );
         }
+
+        protected IActionResult CustomUnauthorized(string message)
+        {
+            return Unauthorized(
+                new ApiResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = message,
+                    Data = new List<object>(),
+                    Errors = [],
+                }
+            );
+        }
     }
 }
