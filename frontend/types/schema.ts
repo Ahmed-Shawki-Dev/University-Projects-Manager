@@ -11,22 +11,6 @@ export enum ProjectType {
   GraduationProject = "GraduationProject",
 }
 
-export interface ApiResponse<T> {
-  isSuccess: boolean;
-  message: string;
-  data: T | null;
-  errors: string[];
-}
-
-export interface PagedResponse<T> extends ApiResponse<T> {
-  currentPage: number;
-  totalPages: number;
-  pageSize: number;
-  totalCount: number;
-  hasPrevious: boolean;
-  hasNext: boolean;
-}
-
 export interface RegisterDto {
   email: string;
   fullName: string;
@@ -158,4 +142,13 @@ export interface ProjectRouteParams {
   universitySlug: string;
   facultySlug: string;
   projectSlug?: string;
+}
+
+// Faculty
+export interface FacultyLayoutDto {
+  id: number;
+  name: string;
+  slug: string;
+  universityId: number;
+  university: UniversityDto | null;
 }
