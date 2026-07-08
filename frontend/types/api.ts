@@ -3,6 +3,7 @@ export interface ApiResponse<T> {
   data: T;
   message: string;
   errors: string[];
+  status: number;
 }
 
 export interface PagedResponse<T> {

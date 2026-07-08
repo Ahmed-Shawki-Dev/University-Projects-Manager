@@ -1,6 +1,7 @@
 using backend.Data;
 using backend.DTOs.Faculty;
 using backend.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -127,6 +128,23 @@ namespace backend.Controllers
         [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/layout-details")]
         public async Task<IActionResult> GetLayoutDetails(string universitySlug, string facultySlug)
         {
+            Console.WriteLine($"Is Authenticated: {User.Identity?.IsAuthenticated}");
+            Console.WriteLine($"Token University: {User.FindFirst("UniversitySlug")?.Value}");
+            Console.WriteLine($"Token Faculty: {User.FindFirst("FacultySlug")?.Value}");
+
+            var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+
+            if (isAuthenticated)
+            {
+                var tokenUniversity = User.FindFirst("UniversitySlug")?.Value;
+                var tokenFaculty = User.FindFirst("FacultySlug")?.Value;
+
+                if (tokenUniversity != universitySlug || tokenFaculty != facultySlug)
+                {
+                    return Forbid();
+                }
+            }
+
             var data = await context
                 .Faculties.Include(f => f.University)
                 .FirstOrDefaultAsync(f =>

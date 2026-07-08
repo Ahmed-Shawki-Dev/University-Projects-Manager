@@ -1,5 +1,6 @@
 "use server";
 import { ApiResponse } from "@/types/api";
+import { cookies } from "next/headers";
 
 const baseUrl = process.env.SERVER_URL;
 
@@ -9,7 +10,19 @@ export async function fetchApi<T>(
 ): Promise<ApiResponse<T>> {
   try {
     const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
-    const res = await fetch(`${baseUrl}${cleanEndpoint}`, options);
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    const newHeaders = new Headers(options?.headers);
+
+    if (token) {
+      newHeaders.set("Authorization", `Bearer ${token}`);
+    }
+
+    const res = await fetch(`${baseUrl}${cleanEndpoint}`, {
+      ...options,
+      headers: newHeaders,
+    });
 
     let responseData: Partial<ApiResponse<T>> | null = null;
     try {
@@ -24,6 +37,7 @@ export async function fetchApi<T>(
         message: responseData?.message || `There Is Error ${res.status}`,
         data: null as unknown as T,
         errors: responseData?.errors || ["Server Error Occurred"],
+        status: res.status,
       };
     }
     if (!responseData) {
@@ -32,6 +46,7 @@ export async function fetchApi<T>(
         message: "Done Successfully",
         data: null as unknown as T,
         errors: [],
+        status: res.status,
       };
     }
 
@@ -42,6 +57,7 @@ export async function fetchApi<T>(
       message: `There Is Error`,
       data: null as unknown as T,
       errors: ["Server Error Occurred"],
+      status: 500,
     };
   }
 }

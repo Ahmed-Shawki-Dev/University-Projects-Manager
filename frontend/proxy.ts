@@ -1,3 +1,4 @@
+import { decodeJwt } from "jose";
 import { NextResponse, type NextRequest } from "next/server";
 import {
   getRouteSlugs,
@@ -18,10 +19,17 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isAuthRoute(pathname) && token && !isTokenInvalid) {
-    return NextResponse.redirect(
-      new URL(`/app/${universitySlug}/${facultySlug}`, request.url),
-    );
+  if (isAuthRoute(pathname)) {
+    if (token && !isTokenInvalid) {
+      const payload = decodeJwt(token);
+      return NextResponse.redirect(
+        new URL(
+          `/app/${payload.UniversitySlug}/${payload.FacultySlug}/projects`,
+          request.url,
+        ),
+      );
+    }
+    return NextResponse.next();
   }
 
   if (isProtectedRoute(pathname)) {
@@ -32,6 +40,22 @@ export async function proxy(request: NextRequest) {
       response.cookies.delete("token");
       return response;
     }
+  }
+
+  const payload = decodeJwt(token!);
+  const tokenUni = String(payload.UniversitySlug).toLowerCase();
+  const tokenFac = String(payload.FacultySlug).toLowerCase();
+
+  if (
+    tokenUni !== universitySlug?.toLowerCase() ||
+    tokenFac !== facultySlug?.toLowerCase()
+  ) {
+    return NextResponse.redirect(
+      new URL(
+        `/app/${payload.UniversitySlug}/${payload.FacultySlug}/projects`,
+        request.url,
+      ),
+    );
   }
 
   return NextResponse.next();
