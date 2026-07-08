@@ -132,8 +132,8 @@ namespace backend.Controllers
                     new Claim("fullName", user.FullName),
                     new Claim("email", user.Email!),
                     new Claim("studentCode", student.StudentCode),
-                    new Claim("UniversitySlug", student.Faculty!.University!.Slug),
-                    new Claim("FacultySlug", student.Faculty.Slug),
+                    new Claim("universitySlug", student.Faculty!.University!.Slug),
+                    new Claim("facultySlug", student.Faculty.Slug),
                 };
 
                 var token = tokenService.GenerateToken(authClaims);

@@ -127,19 +127,16 @@ namespace backend.Controllers
         }
 
         // ** Get Layout Details && Check Slugs
+        [AllowAnonymous]
         [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/layout-details")]
         public async Task<IActionResult> GetLayoutDetails(string universitySlug, string facultySlug)
         {
-            Console.WriteLine($"Is Authenticated: {User.Identity?.IsAuthenticated}");
-            Console.WriteLine($"Token University: {User.FindFirst("UniversitySlug")?.Value}");
-            Console.WriteLine($"Token Faculty: {User.FindFirst("FacultySlug")?.Value}");
-
             var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
 
             if (isAuthenticated)
             {
-                var tokenUniversity = User.FindFirst("UniversitySlug")?.Value;
-                var tokenFaculty = User.FindFirst("FacultySlug")?.Value;
+                var tokenUniversity = User.FindFirst("universitySlug")?.Value;
+                var tokenFaculty = User.FindFirst("facultySlug")?.Value;
 
                 if (tokenUniversity != universitySlug || tokenFaculty != facultySlug)
                 {

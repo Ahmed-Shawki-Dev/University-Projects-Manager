@@ -43,8 +43,8 @@ export async function proxy(request: NextRequest) {
   }
 
   const payload = decodeJwt(token!);
-  const tokenUni = String(payload.UniversitySlug).toLowerCase();
-  const tokenFac = String(payload.FacultySlug).toLowerCase();
+  const tokenUni = String(payload.universitySlug).toLowerCase();
+  const tokenFac = String(payload.facultySlug).toLowerCase();
 
   if (
     tokenUni !== universitySlug?.toLowerCase() ||
