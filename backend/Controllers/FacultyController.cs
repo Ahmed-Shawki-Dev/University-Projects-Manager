@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/university/{universitySlug}/faculties")]
     public class FacultyController(ApplicationDbContext context) : BaseApiController
     {
@@ -27,6 +28,7 @@ namespace backend.Controllers
             return Success(facultiesDto, "The Faculties Retrieved Successfully");
         }
 
+        [AllowAnonymous]
         [HttpGet("{facultySlug}")]
         // Get Faculty By Slug
         public async Task<IActionResult> GetBySlug(

@@ -3,12 +3,14 @@ using backend.Data;
 using backend.DTOs.User;
 using backend.Models;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
+    [AllowAnonymous]
     [Route("api/auth")]
     public class AccountController(
         UserManager<AppUser> userManager,

@@ -1,13 +1,16 @@
 using backend.Data;
 using backend.DTOs.Milestone;
 using backend.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
+    [Route("api/milestones")]
     public class MilestoneController(ApplicationDbContext context) : BaseApiController
     {
+        // Get All Milestones
         [HttpGet(
             "/api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}/milestones"
         )]
@@ -18,7 +21,8 @@ namespace backend.Controllers
         )
         {
             var milestonesDto = await context
-                .Milestones.Where(m =>
+                .Milestones.AsNoTracking()
+                .Where(m =>
                     m.Project!.Faculty.University.Slug == universitySlug
                     && m.Project.Faculty.Slug == facultySlug
                     && m.Project.Slug == projectSlug
@@ -29,22 +33,13 @@ namespace backend.Controllers
             return Success(milestonesDto, "Milestones Retrieved Successfully");
         }
 
-        [HttpGet(
-            "/api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}/milestones/{milestoneId}"
-        )]
-        public async Task<IActionResult> GetMilestoneById(
-            [FromRoute] string universitySlug,
-            [FromRoute] string facultySlug,
-            [FromRoute] string projectSlug,
-            [FromRoute] Guid milestoneId
-        )
+        // Get Milestone By ID
+        [HttpGet("{milestoneId:guid}")]
+        public async Task<IActionResult> GetMilestoneById([FromRoute] Guid milestoneId)
         {
-            var milestone = await context.Milestones.FirstOrDefaultAsync(m =>
-                m.Id == milestoneId
-                && m.Project!.Slug == projectSlug
-                && m.Project.Faculty.Slug == facultySlug
-                && m.Project.Faculty.University.Slug == universitySlug
-            );
+            var milestone = await context
+                .Milestones.AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == milestoneId);
 
             if (milestone == null)
             {
@@ -87,13 +82,7 @@ namespace backend.Controllers
 
             return CustomCreateAtAction(
                 nameof(GetMilestoneById),
-                new
-                {
-                    universitySlug,
-                    facultySlug,
-                    projectSlug,
-                    milestoneId = milestoneModel.Id,
-                },
+                new { milestoneId = milestoneModel.Id },
                 milestoneModel.ToDto(),
                 "Milestone Created Successfully"
             );

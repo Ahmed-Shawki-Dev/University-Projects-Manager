@@ -10,6 +10,7 @@ namespace backend.Controllers
 {
     public class ProjectController(ApplicationDbContext context) : BaseApiController
     {
+        // **Get All Projects
         [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/projects")]
         public async Task<IActionResult> GetAllProjects(
             [FromRoute] string universitySlug,
@@ -17,7 +18,8 @@ namespace backend.Controllers
         )
         {
             var projects = await context
-                .Projects.Where(p =>
+                .Projects.AsNoTracking()
+                .Where(p =>
                     p.Faculty.University.Slug == universitySlug && p.Faculty.Slug == facultySlug
                 )
                 .Select(p => p.ToDto())
@@ -61,13 +63,11 @@ namespace backend.Controllers
         {
             string generatedSlug = SlugHelper.GenerateSlug(projectDto.Name);
 
-            var isProjectExist = await context
-                .Projects.AsQueryable()
-                .AnyAsync(p =>
-                    p.Faculty.University.Slug == universitySlug
-                    && p.Faculty.Slug == facultySlug
-                    && p.Slug == generatedSlug
-                );
+            var isProjectExist = await context.Projects.AnyAsync(p =>
+                p.Faculty.University.Slug == universitySlug
+                && p.Faculty.Slug == facultySlug
+                && p.Slug == generatedSlug
+            );
 
             if (isProjectExist)
             {
@@ -79,12 +79,12 @@ namespace backend.Controllers
                 .Select(f => (Guid?)f.Id)
                 .FirstOrDefaultAsync();
 
-            var projectModel = projectDto.ToModel();
-
             if (facultyId == null)
             {
                 return CustomBadRequest("The specified Faculty or University does not exist.", []);
             }
+
+            var projectModel = projectDto.ToModel();
 
             projectModel.FacultyId = facultyId.Value;
             projectModel.Slug = generatedSlug;
