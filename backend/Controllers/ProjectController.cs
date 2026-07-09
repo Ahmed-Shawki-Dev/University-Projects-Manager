@@ -54,6 +54,7 @@ namespace backend.Controllers
             return Success(projectDto, "Project Retrieved Successfully");
         }
 
+        // ** Create a project
         [HttpPost("/api/universities/{universitySlug}/faculties/{facultySlug}/projects")]
         public async Task<IActionResult> CreateProject(
             [FromRoute] string universitySlug,
