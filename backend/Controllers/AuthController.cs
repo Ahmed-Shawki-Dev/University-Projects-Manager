@@ -43,13 +43,16 @@ namespace backend.Controllers
                 return CustomBadRequest("The Email Is Already Exist.", []);
             }
 
-            var isCodeRegisterd = await context.Students.AnyAsync(s =>
-                s.StudentCode == user.StudentCode
+            var isCodeRegisteredInFaculty = await context.Students.AnyAsync(s =>
+                s.StudentCode == user.StudentCode && s.FacultyId == faculty.Id
             );
 
-            if (isCodeRegisterd)
+            if (isCodeRegisteredInFaculty)
             {
-                return CustomBadRequest("The Student Code is already registered.", []);
+                return CustomBadRequest(
+                    "The Student Code is already registered in this faculty.",
+                    []
+                );
             }
 
             var appUser = new AppUser()

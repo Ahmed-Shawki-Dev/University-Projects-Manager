@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using backend.Data;
 using backend.DTOs;
 using backend.Extensions;
+using backend.Filters;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,6 +20,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddScoped<CheckFacultyContextFilter>();
 
 // OpenAPI
 builder.Services.AddOpenApi(options =>

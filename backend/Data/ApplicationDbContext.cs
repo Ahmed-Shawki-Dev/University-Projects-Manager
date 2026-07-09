@@ -26,7 +26,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
 
         //* Unique Slug
         modelBuilder.Entity<University>().HasIndex(u => u.Slug).IsUnique();
-        modelBuilder.Entity<Student>().HasIndex(s => s.StudentCode).IsUnique();
+        modelBuilder.Entity<Student>().HasIndex(s => new { s.StudentCode, s.FacultyId }).IsUnique();
         modelBuilder.Entity<Faculty>().HasIndex(f => new { f.UniversityId, f.Slug }).IsUnique();
         modelBuilder.Entity<Project>().HasIndex(p => new { p.FacultyId, p.Slug }).IsUnique();
 

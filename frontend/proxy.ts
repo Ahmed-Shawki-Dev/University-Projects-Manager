@@ -52,7 +52,7 @@ export async function proxy(request: NextRequest) {
   ) {
     return NextResponse.redirect(
       new URL(
-        `/app/${payload.UniversitySlug}/${payload.FacultySlug}/projects`,
+        `/app/${payload.universitySlug}/${payload.facultySlug}/projects`,
         request.url,
       ),
     );

@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.DTOs.Project;
+using backend.Filters;
 using backend.Mappers;
 using backend.Models;
 using backend.Utils;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
+    [ServiceFilter(typeof(CheckFacultyContextFilter))]
     public class ProjectController(ApplicationDbContext context) : BaseApiController
     {
         // **Get All Projects

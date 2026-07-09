@@ -1,10 +1,12 @@
 using backend.DTOs;
+using backend.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
     [Authorize]
+    [ServiceFilter(typeof(CheckFacultyContextFilter))]
     [ApiController]
     [Route("api/[controller]")]
     public class BaseApiController : ControllerBase
