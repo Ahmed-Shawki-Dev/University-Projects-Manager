@@ -12,7 +12,7 @@ namespace backend.Controllers
 {
     [AllowAnonymous]
     [Route("api/auth")]
-    public class AccountController(
+    public class AuthController(
         UserManager<AppUser> userManager,
         ApplicationDbContext context,
         TokenService tokenService
@@ -109,6 +109,9 @@ namespace backend.Controllers
                 return CustomUnauthorized("The email or password is wrong.");
             }
 
+            var roles = await userManager.GetRolesAsync(user);
+            var userRole = roles.FirstOrDefault();
+
             if (await userManager.CheckPasswordAsync(user, userLogin.Password))
             {
                 var student = await context
@@ -129,6 +132,8 @@ namespace backend.Controllers
                 }
                 var authClaims = new List<Claim>
                 {
+                    new Claim("userId", user.Id.ToString()),
+                    new Claim("userRole", userRole ?? ""),
                     new Claim("fullName", user.FullName),
                     new Claim("email", user.Email!),
                     new Claim("studentCode", student.StudentCode),

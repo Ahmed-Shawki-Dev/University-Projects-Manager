@@ -62,6 +62,16 @@ namespace backend.Controllers
             [FromBody] CreateProjectDto projectDto
         )
         {
+            var currentUserId = User.FindFirst("userId")?.Value;
+            var currentRole = User
+                .Claims.FirstOrDefault(c => c.Type.ToLower() == "userrole")
+                ?.Value;
+
+            if (string.IsNullOrEmpty(currentUserId))
+            {
+                return Unauthorized();
+            }
+
             string generatedSlug = SlugHelper.GenerateSlug(projectDto.Name);
 
             var isProjectExist = await context.Projects.AnyAsync(p =>
@@ -95,6 +105,22 @@ namespace backend.Controllers
             Team teamModel = new Team();
             teamModel.Name = projectModel.Name;
             teamModel.Project = projectModel;
+
+            Console.WriteLine($"[DEBUG] currentUserId from Token: '{currentUserId}'");
+            Console.WriteLine($"[DEBUG] currentRole from Token: '{currentRole}'");
+            Console.WriteLine(
+                $"[DEBUG] checking condition: is '{currentRole}' equals to 'Student'?"
+            );
+
+            if (string.Equals(currentRole, "Student", StringComparison.OrdinalIgnoreCase))
+            {
+                var student = await context
+                    .Students.AsNoTracking()
+                    .FirstOrDefaultAsync(s => s.UserId == Guid.Parse(currentUserId));
+                teamModel.LeaderId = student!.Id;
+                var studentTeamModel = new StudentTeam { StudentId = student.Id, Team = teamModel };
+                context.StudentTeams.Add(studentTeamModel);
+            }
 
             context.Teams.Add(teamModel);
 
