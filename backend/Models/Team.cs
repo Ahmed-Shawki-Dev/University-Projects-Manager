@@ -5,8 +5,9 @@ namespace backend.Models
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-
         public Guid? LeaderId { get; set; }
+        public int MaxStudents { get; set; }
+        public string InviteCode { get; set; } = string.Empty;
 
         public Guid ProjectId { get; set; }
         public virtual Project Project { get; set; } = null!;
