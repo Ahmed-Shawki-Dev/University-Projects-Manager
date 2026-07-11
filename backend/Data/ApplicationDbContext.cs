@@ -19,6 +19,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
     public DbSet<Team> Teams { get; set; }
     public DbSet<StudentTeam> StudentTeams { get; set; }
     public DbSet<StudentGrade> StudentGrades { get; set; }
+    public DbSet<AcademicContext> AcademicContexts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
