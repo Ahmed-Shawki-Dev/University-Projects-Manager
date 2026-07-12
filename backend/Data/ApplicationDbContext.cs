@@ -20,6 +20,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
     public DbSet<StudentTeam> StudentTeams { get; set; }
     public DbSet<StudentGrade> StudentGrades { get; set; }
     public DbSet<AcademicContext> AcademicContexts { get; set; }
+    public DbSet<Doctor> Doctors { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -89,6 +90,13 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
             .HasOne(u => u.Student)
             .WithOne(s => s.User)
             .HasForeignKey<Student>(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<AppUser>()
+            .HasOne(u => u.Doctor)
+            .WithOne(s => s.User)
+            .HasForeignKey<Doctor>(s => s.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 

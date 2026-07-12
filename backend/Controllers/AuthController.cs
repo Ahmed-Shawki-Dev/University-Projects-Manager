@@ -117,32 +117,49 @@ namespace backend.Controllers
 
             if (await userManager.CheckPasswordAsync(user, userLogin.Password))
             {
-                var student = await context
-                    .Students.Include(s => s.Faculty)
-                        .ThenInclude(f => f!.University)
-                    .FirstOrDefaultAsync(s =>
-                        s.UserId == user.Id
-                        && s.Faculty!.Slug == facultySlug
-                        && s.Faculty.University.Slug == universitySlug
-                    );
-
-                if (student == null)
-                {
-                    return CustomBadRequest(
-                        "You are not registered in this faculty/university.",
-                        []
-                    );
-                }
                 var authClaims = new List<Claim>
                 {
                     new Claim("userId", user.Id.ToString()),
                     new Claim("userRole", userRole ?? ""),
                     new Claim("fullName", user.FullName),
                     new Claim("email", user.Email!),
-                    new Claim("studentCode", student.StudentCode),
-                    new Claim("universitySlug", student.Faculty!.University!.Slug),
-                    new Claim("facultySlug", student.Faculty.Slug),
+                    new Claim("universitySlug", universitySlug),
+                    new Claim("facultySlug", facultySlug),
                 };
+
+                if (userRole == "Student")
+                {
+                    var student = await context
+                        .Students.Include(s => s.Faculty)
+                            .ThenInclude(f => f!.University)
+                        .FirstOrDefaultAsync(s =>
+                            s.UserId == user.Id
+                            && s.Faculty!.Slug == facultySlug
+                            && s.Faculty.University.Slug == universitySlug
+                        );
+                    if (student == null)
+                        return CustomBadRequest(
+                            "You are not registered as a student in this faculty/university.",
+                            []
+                        );
+                    authClaims.Add(new Claim("studentId", student.Id.ToString()));
+                    authClaims.Add(new Claim("studentCode", student.StudentCode));
+                }
+                else if (userRole == "Doctor")
+                {
+                    var doctor = await context.Doctors.FirstOrDefaultAsync(d =>
+                        d.UserId == user.Id
+                    );
+
+                    if (doctor == null)
+                        return CustomBadRequest("Doctor profile not found.", []);
+
+                    authClaims.Add(new Claim("doctorId", doctor.Id.ToString()));
+                }
+                else
+                {
+                    return CustomBadRequest("Invalid user role setup.", []);
+                }
 
                 var token = tokenService.GenerateToken(authClaims);
 
