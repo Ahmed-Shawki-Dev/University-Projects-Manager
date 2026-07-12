@@ -1,4 +1,4 @@
-using backend.DTOs.Project;
+using backend.DTOs;
 using backend.Models;
 
 namespace backend.Mappers;
@@ -11,6 +11,7 @@ public static class ProjectMapper
             project.Id,
             project.Name,
             project.Description!,
+            project.Team != null ? project.Team.MaxStudents : 0,
             project.Slug,
             project.Type
         );
@@ -23,7 +24,7 @@ public static class ProjectMapper
             Name = projectDto.Name,
             Description = projectDto.Description,
             TotalProjectGrade = projectDto.TotalProjectGrade,
-            Deadline = projectDto.Deadline,
+            Deadline = projectDto.Deadline.ToUniversalTime(),
             Type = projectDto.Type,
         };
     }

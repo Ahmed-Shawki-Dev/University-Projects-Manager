@@ -1,5 +1,5 @@
 using backend.Data;
-using backend.DTOs.Milestone;
+using backend.DTOs;
 using backend.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +52,7 @@ namespace backend.Controllers
             return Success(milestone.ToDto(), "Milestone Retrieved Successfully");
         }
 
+        // ** Create New Milestone
         [HttpPost(
             "/api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}/milestones"
         )]

@@ -1,4 +1,4 @@
-using backend.DTOs.Task;
+using backend.DTOs;
 
 namespace backend.Mappers
 {

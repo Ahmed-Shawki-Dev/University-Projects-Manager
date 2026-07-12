@@ -1,5 +1,5 @@
-namespace backend.DTOs.University
-{
+namespace backend.DTOs;
+
     public class PagedResponse<T> : ApiResponse<T>
     {
         public int CurrentPage { get; set; }
@@ -9,4 +9,3 @@ namespace backend.DTOs.University
         public bool HasPrevious { get; set; }
         public bool HasNext { get; set; }
     }
-}

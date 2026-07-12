@@ -45,14 +45,14 @@ namespace backend.Filters
                 )
                 ?.Value;
 
-            if (
-                !string.Equals(routeUniversity, tokenUniversity, StringComparison.OrdinalIgnoreCase)
-                || !string.Equals(routeFaculty, tokenFaculty, StringComparison.OrdinalIgnoreCase)
-            )
-            {
-                context.Result = new ForbidResult();
-                return;
-            }
+            // if (
+            //     !string.Equals(routeUniversity, tokenUniversity, StringComparison.OrdinalIgnoreCase)
+            //     || !string.Equals(routeFaculty, tokenFaculty, StringComparison.OrdinalIgnoreCase)
+            // )
+            // {
+            //     context.Result = new ForbidResult();
+            //     return;
+            // }
 
             await next();
         }

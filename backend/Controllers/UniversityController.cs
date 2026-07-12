@@ -1,8 +1,6 @@
 using backend.Data;
 using backend.DTOs;
-using backend.DTOs.University;
 using backend.Mappers;
-using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

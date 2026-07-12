@@ -34,7 +34,7 @@ namespace backend.Models
         public List<Milestone> Milestones { get; set; } = new();
 
         // ** Relation With Academic Context
-        public Guid AcademicContextId { get; set; }
-        public AcademicContext AcademicContext { get; set; } = null!;
+        public Guid? AcademicContextId { get; set; }
+        public AcademicContext? AcademicContext { get; set; } = null!;
     }
 }

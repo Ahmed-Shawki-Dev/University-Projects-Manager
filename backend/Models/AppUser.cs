@@ -7,5 +7,6 @@ namespace backend.Models
         public string FullName { get; set; } = string.Empty;
 
         public Student? Student { get; set; }
+        public Doctor? Doctor { get; set; }
     }
 }

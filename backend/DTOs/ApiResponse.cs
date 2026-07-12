@@ -1,5 +1,5 @@
-namespace backend.DTOs
-{
+namespace backend.DTOs;
+
     public class ApiResponse<T>
     {
         public bool IsSuccess { get; set; }
@@ -7,4 +7,3 @@ namespace backend.DTOs
         public T? Data { get; set; }
         public List<string> Errors { get; set; } = new();
     }
-}

@@ -1,5 +1,5 @@
 using backend.Data;
-using backend.DTOs.Faculty;
+using backend.DTOs;
 using backend.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [Route("api/university/{universitySlug}/faculties")]
     public class FacultyController(ApplicationDbContext context) : BaseApiController
     {

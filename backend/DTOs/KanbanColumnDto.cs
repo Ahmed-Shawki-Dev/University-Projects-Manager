@@ -1,4 +1,4 @@
-using backend.DTOs.Task;
+using backend.DTOs;
 using backend.Models;
 
 namespace backend.DTOs

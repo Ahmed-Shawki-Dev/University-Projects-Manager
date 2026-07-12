@@ -1,5 +1,4 @@
 using backend.DTOs;
-using backend.DTOs.Faculty;
 using backend.Models;
 
 namespace backend.Mappers
@@ -18,33 +17,24 @@ namespace backend.Mappers
 
         public static FacultyDto ToDto(this Faculty faculty)
         {
-            return new FacultyDto
-            {
-                Name = faculty.Name,
-                Id = faculty.Id,
-                Slug = faculty.Slug,
-                UniversityId = faculty.UniversityId,
-            };
+            return new FacultyDto(faculty.Id, faculty.Name, faculty.Slug, faculty.UniversityId);
         }
 
         public static FacultyDto ToFacultyWithUniversityDto(this Faculty faculty)
         {
-            return new FacultyDto
-            {
-                Name = faculty.Name,
-                Id = faculty.Id,
-                Slug = faculty.Slug,
-                UniversityId = faculty.UniversityId,
-                University =
-                    faculty.University != null
-                        ? new UniversityDto
-                        {
-                            Id = faculty.University.Id,
-                            Name = faculty.University.Name,
-                            Slug = faculty.University.Slug,
-                        }
-                        : null,
-            };
+            return new FacultyDto(
+                faculty.Id,
+                faculty.Name,
+                faculty.Slug,
+                faculty.UniversityId,
+                faculty.University != null
+                    ? new UniversityDto(
+                        faculty.University.Id,
+                        faculty.University.Name,
+                        faculty.University.Slug
+                    )
+                    : null
+            );
         }
     }
 }

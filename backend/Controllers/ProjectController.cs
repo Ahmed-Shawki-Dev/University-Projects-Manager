@@ -1,9 +1,10 @@
 using backend.Data;
-using backend.DTOs.Project;
+using backend.DTOs;
 using backend.Filters;
 using backend.Mappers;
 using backend.Models;
 using backend.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +13,7 @@ namespace backend.Controllers
     [ServiceFilter(typeof(CheckFacultyContextFilter))]
     public class ProjectController(ApplicationDbContext context) : BaseApiController
     {
-        // **Get All Projects
+        // ** Get All Projects With Team Details
         [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/projects")]
         public async Task<IActionResult> GetAllProjects(
             [FromRoute] string universitySlug,
@@ -64,28 +65,7 @@ namespace backend.Controllers
             [FromBody] CreateProjectDto projectDto
         )
         {
-            var currentUserId = User.FindFirst("userId")?.Value;
-            var currentRole = User
-                .Claims.FirstOrDefault(c => c.Type.ToLower() == "userrole")
-                ?.Value;
-
-            if (string.IsNullOrEmpty(currentUserId))
-            {
-                return Unauthorized();
-            }
-
             string generatedSlug = SlugHelper.GenerateSlug(projectDto.Name);
-
-            var isProjectExist = await context.Projects.AnyAsync(p =>
-                p.Faculty.University.Slug == universitySlug
-                && p.Faculty.Slug == facultySlug
-                && p.Slug == generatedSlug
-            );
-
-            if (isProjectExist)
-            {
-                return CustomBadRequest("Project Is Already Exist", []);
-            }
 
             var facultyId = await context
                 .Faculties.Where(f => f.Slug == facultySlug && f.University.Slug == universitySlug)
@@ -93,39 +73,33 @@ namespace backend.Controllers
                 .FirstOrDefaultAsync();
 
             if (facultyId == null)
-            {
-                return CustomBadRequest("The specified Faculty or University does not exist.", []);
-            }
+                return CustomBadRequest("The specified Faculty does not exist.", []);
+
+            var isProjectExist = await context.Projects.AnyAsync(p =>
+                p.Slug == generatedSlug && p.FacultyId == facultyId.Value
+            );
+            if (isProjectExist)
+                return CustomBadRequest("Project Is Already Exist", []);
 
             var projectModel = projectDto.ToModel();
-
             projectModel.FacultyId = facultyId.Value;
+            projectModel.AcademicContextId = null;
             projectModel.Slug = generatedSlug;
+            projectModel.Faculty = null!;
 
             context.Projects.Add(projectModel);
 
-            Team teamModel = new Team();
-            teamModel.Name = projectModel.Name;
-            teamModel.Project = projectModel;
-
-            Console.WriteLine($"[DEBUG] currentUserId from Token: '{currentUserId}'");
-            Console.WriteLine($"[DEBUG] currentRole from Token: '{currentRole}'");
-            Console.WriteLine(
-                $"[DEBUG] checking condition: is '{currentRole}' equals to 'Student'?"
-            );
-
-            if (string.Equals(currentRole, "Student", StringComparison.OrdinalIgnoreCase))
+            Team teamModel = new Team
             {
-                var student = await context
-                    .Students.AsNoTracking()
-                    .FirstOrDefaultAsync(s => s.UserId == Guid.Parse(currentUserId));
-                teamModel.LeaderId = student!.Id;
-                var studentTeamModel = new StudentTeam { StudentId = student.Id, Team = teamModel };
-                context.StudentTeams.Add(studentTeamModel);
-            }
+                Id = Guid.NewGuid(),
+                Name = $"Team - {projectModel.Name}",
+                Project = projectModel,
+                MaxStudents = projectDto.MaxStudents,
+                LeaderId = null,
+                InviteCode = Guid.NewGuid().ToString().Substring(0, 6).ToUpper(),
+            };
 
             context.Teams.Add(teamModel);
-
             await context.SaveChangesAsync();
 
             return CustomCreateAtAction(
@@ -137,8 +111,57 @@ namespace backend.Controllers
                     projectSlug = projectModel.Slug,
                 },
                 projectModel.ToDto(),
-                "Project Created Successfully"
+                "Project and its Team Created Successfully"
             );
+        }
+
+        // ** Join To The Project Api
+        [HttpPost(
+            "/api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}/join"
+        )]
+        public async Task<IActionResult> StudentJoinToProject(
+            string facultySlug,
+            string universitySlug,
+            string projectSlug
+        )
+        {
+            var userIdClaim = User.FindFirst("userId");
+            Console.WriteLine(userIdClaim);
+            if (userIdClaim == null)
+                return Unauthorized("User context is missing.");
+
+            var student = await context.Students.FirstOrDefaultAsync(s =>
+                s.UserId == Guid.Parse(userIdClaim.Value)
+            );
+            if (student == null)
+                return CustomBadRequest("The Student Not Exist!", []);
+
+            var team = await context
+                .Teams.Include(t => t.StudentTeams)
+                .FirstOrDefaultAsync(t => t.Project.Slug == projectSlug);
+
+            if (team == null)
+                return CustomBadRequest("The Team Not Exist!", []);
+
+            var isAlreadyMember = team.StudentTeams.Any(st => st.StudentId == student.Id);
+            if (isAlreadyMember)
+                return CustomBadRequest("إنت مسجل في التيم ده بالفعل!", []);
+
+            if (team.StudentTeams.Count >= team.MaxStudents)
+                return CustomBadRequest("التيم ده اكتمل ومفيش مكان فاضي!", []);
+
+            if (team.LeaderId == null || team.StudentTeams.Count == 0)
+            {
+                team.LeaderId = student.Id;
+            }
+
+            var newMemberEntry = new StudentTeam { StudentId = student.Id, TeamId = team.Id };
+
+            context.StudentTeams.Add(newMemberEntry);
+
+            await context.SaveChangesAsync();
+
+            return Ok(new { message = "تم الانضمام للمشروع بنجاح!" });
         }
     }
 }

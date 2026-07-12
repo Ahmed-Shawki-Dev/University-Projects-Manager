@@ -1,4 +1,4 @@
-using backend.DTOs.Milestone;
+using backend.DTOs;
 using backend.Models;
 
 namespace backend.Mappers
@@ -25,8 +25,8 @@ namespace backend.Mappers
                 Title = milestoneDto.Title,
                 Description = milestoneDto.Description,
                 MaxGrade = milestoneDto.MaxGrade,
-                StartDate = milestoneDto.StartDate,
-                DueDate = milestoneDto.DueDate,
+                StartDate = milestoneDto.StartDate.ToUniversalTime(),
+                DueDate = milestoneDto.DueDate.ToUniversalTime(),
             };
         }
     }

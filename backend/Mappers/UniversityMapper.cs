@@ -1,5 +1,4 @@
 using backend.DTOs;
-using backend.DTOs.University;
 using backend.Models;
 
 namespace backend.Mappers
@@ -18,12 +17,7 @@ namespace backend.Mappers
 
         public static UniversityDto ToDto(this University university)
         {
-            return new UniversityDto
-            {
-                Name = university.Name,
-                Id = university.Id,
-                Slug = university.Slug,
-            };
+            return new UniversityDto(university.Id, university.Name, university.Slug);
         }
     }
 }
