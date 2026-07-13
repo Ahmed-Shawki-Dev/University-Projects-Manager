@@ -86,6 +86,41 @@ namespace backend.Controllers
             return Success(projectDto, "Project Retrieved Successfully");
         }
 
+        // ** Get Sidebar Project (My Project)
+        [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/projects/my-projects")]
+        public async Task<IActionResult> GetStudentJoinedProjects(
+            string universitySlug,
+            string facultySlug
+        )
+        {
+            var userIdClaim = User.FindFirst("userId");
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User context is missing");
+            }
+
+            var studentId = await context
+                .Students.Where(s => s.UserId == Guid.Parse(userIdClaim.Value))
+                .Select(s => s.Id)
+                .FirstOrDefaultAsync();
+
+            if (studentId == Guid.Empty)
+                return CustomBadRequest("The Student Not Exist!", []);
+
+            var myProjects = await context
+                .Projects.AsNoTracking()
+                .Where(p =>
+                    p.Faculty.University.Slug == universitySlug
+                    && p.Faculty.Slug == facultySlug
+                    && p.Team != null
+                    && p.Team.StudentTeams.Any(st => st.StudentId == studentId)
+                )
+                .Select(p => p.ToDto())
+                .ToListAsync();
+
+            return Success(myProjects, "Joined projects retrieved successfully");
+        }
+
         // ** Create a project
         [HttpPost("/api/universities/{universitySlug}/faculties/{facultySlug}/projects")]
         public async Task<IActionResult> CreateProject(

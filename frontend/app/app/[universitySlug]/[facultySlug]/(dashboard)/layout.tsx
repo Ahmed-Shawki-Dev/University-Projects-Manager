@@ -14,7 +14,7 @@ export default async function FacultyLayout({
 }) {
   const { universitySlug, facultySlug } = await params;
   const res = await fetchApi<ProjectDto[]>(
-    `/api/universities/${universitySlug}/faculties/${facultySlug}/projects`,
+    `/api/universities/${universitySlug}/faculties/${facultySlug}/projects/my-projects`,
   );
   const projects = res?.data ?? [];
 
