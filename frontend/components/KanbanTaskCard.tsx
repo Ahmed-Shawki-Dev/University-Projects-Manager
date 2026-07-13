@@ -41,7 +41,7 @@ const KanbanTaskCard = ({ colTask, idx, milestones }: IProps) => {
         >
           <CardHeader className="flex justify-between">
             <CardTitle>{colTask.title}</CardTitle>
-            <div className="space-x-1">
+            <div className="space-x-1 flex">
               <Button
                 variant={"outline"}
                 size={"icon-xs"}
