@@ -1,11 +1,5 @@
 import { removeTask } from "@/action/task/removeTask";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MilestoneDto, TaskDto } from "@/types/schema";
 import { Draggable } from "@hello-pangea/dnd";
 import { Edit, X } from "lucide-react";
@@ -47,7 +41,6 @@ const KanbanTaskCard = ({ colTask, idx, milestones }: IProps) => {
         >
           <CardHeader className="flex justify-between">
             <CardTitle>{colTask.title}</CardTitle>
-            <CardDescription></CardDescription>
             <div className="space-x-1">
               <Button
                 variant={"outline"}
@@ -66,11 +59,11 @@ const KanbanTaskCard = ({ colTask, idx, milestones }: IProps) => {
             </div>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <p className="text-xs text-primary/50 mb-3 line-clamp-2">
+            <p className="text-xs opacity-60 mb-3 line-clamp-2">
               {colTask.description}
             </p>
 
-            <div className="text-xs text-primary/30 line-clamp-2">
+            <div className="text-xs opacity-60 line-clamp-2">
               Milestone : {milestone?.title ?? "Without Milestone"}
             </div>
           </CardContent>

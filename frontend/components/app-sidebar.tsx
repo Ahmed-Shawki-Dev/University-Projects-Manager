@@ -11,11 +11,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { useFacultyStore } from "@/stores/facultyStore";
 import { ProjectDto } from "@/types/schema";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ModeToggle } from "./ModeToggle";
+import NavUser from "./NavUser";
 import { Skeleton } from "./ui/skeleton";
 
 interface IProps {
@@ -26,6 +27,7 @@ export function AppSidebar({ projects }: IProps) {
   const params = useParams();
   const uni = params.universitySlug;
   const fac = params.facultySlug;
+  const pro = params.projectSlug;
 
   const universityName = useFacultyStore(
     (s) => s.facultyData?.university?.name,
@@ -63,9 +65,14 @@ export function AppSidebar({ projects }: IProps) {
               </div>
             ) : (
               projects?.map((project) => (
-                <SidebarMenuItem key={project.id}>
+                <SidebarMenuItem key={project.id} className="mb-1">
                   <Link href={`/app/${uni}/${fac}/projects/${project.slug}`}>
-                    <SidebarMenuButton className="cursor-pointer">
+                    <SidebarMenuButton
+                      className={cn(
+                        "cursor-pointer",
+                        pro === project.slug && "bg-sidebar-border  p-2",
+                      )}
+                    >
                       <span>{project.name}</span>
                     </SidebarMenuButton>
                   </Link>
@@ -76,7 +83,7 @@ export function AppSidebar({ projects }: IProps) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="border-t">
-        <ModeToggle />
+        <NavUser user={{ name: "Shawky", email: "shawky@uni.edu" }} />
       </SidebarFooter>
     </Sidebar>
   );
