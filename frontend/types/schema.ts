@@ -152,3 +152,16 @@ export interface FacultyLayoutDto {
   universityId: number;
   university: UniversityDto | null;
 }
+
+// Projects In Explore Page
+export interface ProjectExploreDto {
+  id: string;
+  name: string;
+  description: string | null;
+  slug: string;
+  type: 'CourseProject' | 'UniversityProject' | 'GraduationProject';
+  maxStudents: number;
+  currentStudentCount: number;
+  isCurrentStudentJoined: boolean;
+  isFull: boolean;
+}

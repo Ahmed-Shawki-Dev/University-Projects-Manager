@@ -13,19 +13,48 @@ namespace backend.Controllers
     [ServiceFilter(typeof(CheckFacultyContextFilter))]
     public class ProjectController(ApplicationDbContext context) : BaseApiController
     {
-        // ** Get All Projects With Team Details
+        // ** Get All Projects With Team Details In Explore Page
         [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/projects")]
         public async Task<IActionResult> GetAllProjects(
             [FromRoute] string universitySlug,
-            [FromRoute] string facultySlug
+            [FromRoute] string facultySlug,
+            [FromQuery] ProjectType? projectType
         )
         {
-            var projects = await context
+            Guid? currentStudentId = null;
+            var userIdClaim = User.FindFirst("userId");
+            if (userIdClaim != null)
+            {
+                currentStudentId = await context
+                    .Students.Where(s => s.UserId == Guid.Parse(userIdClaim.Value))
+                    .Select(s => s.Id)
+                    .FirstOrDefaultAsync();
+            }
+
+            var query = context
                 .Projects.AsNoTracking()
                 .Where(p =>
                     p.Faculty.University.Slug == universitySlug && p.Faculty.Slug == facultySlug
-                )
-                .Select(p => p.ToDto())
+                );
+
+            if (projectType != null)
+            {
+                query = query.Where(p => p.Type == projectType);
+            }
+
+            var projects = await query
+                .Select(p => new ProjectExploreDto(
+                    p.Id,
+                    p.Name,
+                    p.Description ?? string.Empty,
+                    p.Team != null ? p.Team.MaxStudents : 0,
+                    p.Team != null ? p.Team.StudentTeams.Count : 0,
+                    p.Slug,
+                    p.Type,
+                    currentStudentId != null
+                        && p.Team != null
+                        && p.Team.StudentTeams.Any(st => st.StudentId == currentStudentId.Value)
+                ))
                 .ToListAsync();
 
             return Success(projects, "Projects retrieved successfully");
@@ -145,10 +174,10 @@ namespace backend.Controllers
 
             var isAlreadyMember = team.StudentTeams.Any(st => st.StudentId == student.Id);
             if (isAlreadyMember)
-                return CustomBadRequest("إنت مسجل في التيم ده بالفعل!", []);
+                return CustomBadRequest("You are already joined to the team!", []);
 
             if (team.StudentTeams.Count >= team.MaxStudents)
-                return CustomBadRequest("التيم ده اكتمل ومفيش مكان فاضي!", []);
+                return CustomBadRequest("The team is full.", []);
 
             if (team.LeaderId == null || team.StudentTeams.Count == 0)
             {
@@ -161,7 +190,7 @@ namespace backend.Controllers
 
             await context.SaveChangesAsync();
 
-            return Ok(new { message = "تم الانضمام للمشروع بنجاح!" });
+            return Success("Joined to team successfully");
         }
     }
 }

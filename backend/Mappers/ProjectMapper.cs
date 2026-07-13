@@ -5,13 +5,12 @@ namespace backend.Mappers;
 
 public static class ProjectMapper
 {
-    public static ProjectDto ToDto(this Project project)
+    public static ProjectDto ToDto(this Project project, Guid? currentStudentId = null)
     {
         return new ProjectDto(
             project.Id,
             project.Name,
-            project.Description!,
-            project.Team != null ? project.Team.MaxStudents : 0,
+            project.Description,
             project.Slug,
             project.Type
         );

@@ -24,6 +24,19 @@ namespace backend.Controllers
             );
         }
 
+        protected IActionResult Success(string message)
+        {
+            return Ok(
+                new ApiResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = message,
+                    Data = null,
+                    Errors = [],
+                }
+            );
+        }
+
         protected IActionResult CustomCreateAtAction<T>(
             string actionName,
             object routeValue,
