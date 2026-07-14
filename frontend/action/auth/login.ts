@@ -1,7 +1,7 @@
 "use server";
 
 import { fetchApi } from "@/lib/fetchApi";
-import { ProjectRouteParams, UserLoginResponseDto } from "@/types/schema";
+import { LoginResponseDto, ProjectRouteParams } from "@/types/schema";
 import { LoginInput } from "@/validation/login";
 
 import { cookies } from "next/headers";
@@ -12,7 +12,7 @@ export const loginAction = async (
 ) => {
   const { facultySlug, universitySlug } = slugs;
 
-  const res = await fetchApi<UserLoginResponseDto>(
+  const res = await fetchApi<LoginResponseDto>(
     `/api/auth/login/${universitySlug}/${facultySlug}`,
     {
       method: "POST",

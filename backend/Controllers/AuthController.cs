@@ -163,7 +163,17 @@ namespace backend.Controllers
 
                 var token = tokenService.GenerateToken(authClaims);
 
-                return Success(new { user = userLogin, token }, "Welcome");
+                UserHeaderDto userRes = new(
+                    user.Email ?? "",
+                    user.FullName,
+                    userRole,
+                    universitySlug,
+                    facultySlug
+                );
+
+                LoginResponseDto res = new(token, userRes);
+
+                return Success(res, "Welcome");
             }
             else
             {

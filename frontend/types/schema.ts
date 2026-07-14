@@ -18,13 +18,21 @@ export interface RegisterDto {
   password: string;
 }
 
-export interface UserLoginDto {
+export interface LoginDto {
   email: string;
   password: string;
 }
 
-export interface UserLoginResponseDto {
-  user: UserLoginDto;
+export interface UserHeaderDto {
+  email: string;
+  fullName: string;
+  userRole: "Student" | "Doctor" | "Admin";
+  universitySlug: string;
+  facultySlug: string;
+}
+
+export interface LoginResponseDto {
+  user: UserHeaderDto;
   token: string;
 }
 
@@ -159,7 +167,7 @@ export interface ProjectExploreDto {
   name: string;
   description: string | null;
   slug: string;
-  type: 'CourseProject' | 'UniversityProject' | 'GraduationProject';
+  type: "CourseProject" | "UniversityProject" | "GraduationProject";
   maxStudents: number;
   currentStudentCount: number;
   isCurrentStudentJoined: boolean;
