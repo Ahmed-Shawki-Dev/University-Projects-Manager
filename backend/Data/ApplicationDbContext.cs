@@ -21,6 +21,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
     public DbSet<StudentGrade> StudentGrades { get; set; }
     public DbSet<AcademicContext> AcademicContexts { get; set; }
     public DbSet<Doctor> Doctors { get; set; }
+    public DbSet<ProjectDoctor> ProjectDoctors { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -98,6 +99,21 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
             .WithOne(s => s.User)
             .HasForeignKey<Doctor>(s => s.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // ** Relation Many To Many: Doctor-Projects
+        modelBuilder.Entity<ProjectDoctor>().HasKey(pd => new { pd.ProjectId, pd.DoctorId });
+
+        modelBuilder
+            .Entity<ProjectDoctor>()
+            .HasOne(pd => pd.Project)
+            .WithMany(p => p.ProjectDoctors)
+            .HasForeignKey(pd => pd.ProjectId);
+
+        modelBuilder
+            .Entity<ProjectDoctor>()
+            .HasOne(pd => pd.Doctor)
+            .WithMany(d => d.ProjectDoctors)
+            .HasForeignKey(pd => pd.DoctorId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

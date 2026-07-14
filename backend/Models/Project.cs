@@ -36,5 +36,8 @@ namespace backend.Models
         // ** Relation With Academic Context
         public Guid? AcademicContextId { get; set; }
         public AcademicContext? AcademicContext { get; set; } = null!;
+
+        // ** Relation With Doctors => Many To Many
+        public List<ProjectDoctor> ProjectDoctors { get; set; } = new();
     }
 }

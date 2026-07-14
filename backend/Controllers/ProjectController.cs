@@ -88,60 +88,66 @@ namespace backend.Controllers
         }
 
         // ** Get Sidebar Project (My Project)
-        // [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/projects/my-projects")]
-        // public async Task<IActionResult> GetStudentJoinedProjects(
-        //     string universitySlug,
-        //     string facultySlug
-        // )
-        // {
-        //     var userIdClaim = User.FindFirst("userId");
-        //     var userRole = User.FindFirst("userRole");
+        [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/projects/my-projects")]
+        public async Task<IActionResult> GetStudentJoinedProjects(
+            string universitySlug,
+            string facultySlug
+        )
+        {
+            var userIdClaim = User.FindFirst("userId");
+            var userRole = User.FindFirst("userRole");
 
-        //     if (userIdClaim == null || userRole == null)
-        //     {
-        //         return Unauthorized();
-        //     }
-        //     if (userRole.Value == "Student")
-        //     {
-        //         var studentId = await context
-        //             .Students.Where(s => s.UserId == Guid.Parse(userIdClaim.Value))
-        //             .Select(s => s.Id)
-        //             .FirstOrDefaultAsync();
+            if (userIdClaim == null || userRole == null)
+            {
+                return Unauthorized();
+            }
+            if (userRole.Value == "Student")
+            {
+                var studentId = await context
+                    .Students.Where(s => s.UserId == Guid.Parse(userIdClaim.Value))
+                    .Select(s => s.Id)
+                    .FirstOrDefaultAsync();
 
-        //         if (studentId == Guid.Empty)
-        //             return CustomBadRequest("The Student Not Exist!", []);
+                if (studentId == Guid.Empty)
+                    return CustomBadRequest("The Student Not Exist!", []);
 
-        //         var studentProject = await context
-        //             .Projects.AsNoTracking()
-        //             .Where(p =>
-        //                 p.Faculty.University.Slug == universitySlug
-        //                 && p.Faculty.Slug == facultySlug
-        //                 && p.Team != null
-        //                 && p.Team.StudentTeams.Any(st => st.StudentId == studentId)
-        //             )
-        //             .Select(p => p.ToDto())
-        //             .ToListAsync();
+                var studentProject = await context
+                    .Projects.AsNoTracking()
+                    .Where(p =>
+                        p.Faculty.University.Slug == universitySlug
+                        && p.Faculty.Slug == facultySlug
+                        && p.Team != null
+                        && p.Team.StudentTeams.Any(st => st.StudentId == studentId)
+                    )
+                    .Select(p => p.ToDto())
+                    .ToListAsync();
 
-        //         return Success(studentProject, "Joined projects retrieved successfully");
-        //     }
+                return Success(studentProject, "Joined projects retrieved successfully");
+            }
 
-        //     if (userRole.Value == "Doctor")
-        //     {
-        //         var studentProject = await context
-        //             .Projects.AsNoTracking()
-        //             .Where(p =>
-        //                 p.Faculty.University.Slug == universitySlug
-        //                 && p.Faculty.Slug == facultySlug
-        //                 && p.Team != null
-        //                 && p.Team.StudentTeams.Any(st => st.StudentId == studentId)
-        //             )
-        //             .Select(p => p.ToDto())
-        //             .ToListAsync();
+            if (userRole.Value == "Doctor")
+            {
+                var doctorId = await context
+                    .Doctors.Where(s => s.UserId == Guid.Parse(userIdClaim.Value))
+                    .Select(s => s.Id)
+                    .FirstOrDefaultAsync();
 
-        //         return Success(studentProject, "Joined projects retrieved successfully");
-        //     }
+                if (doctorId == Guid.Empty)
+                    return CustomBadRequest("The Student Not Exist!", []);
 
-        // }
+                var doctorProject = await context
+                    .Projects.AsNoTracking()
+                    .Where(p =>
+                        p.Faculty.University.Slug == universitySlug && p.Faculty.Slug == facultySlug
+                    )
+                    .Where(p => p.ProjectDoctors.Any(pd => pd.DoctorId == doctorId))
+                    .Select(p => p.ToDto())
+                    .ToListAsync();
+
+                return Success(doctorProject, "Joined projects retrieved successfully");
+            }
+            return Forbid();
+        }
 
         // ** Create a project
         [HttpPost("/api/universities/{universitySlug}/faculties/{facultySlug}/projects")]
