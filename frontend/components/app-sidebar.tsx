@@ -21,9 +21,10 @@ import { Skeleton } from "./ui/skeleton";
 
 interface IProps {
   projects: ProjectDto[];
+  isProfessor?: boolean;
 }
 
-export function AppSidebar({ projects }: IProps) {
+export function AppSidebar({ projects, isProfessor = false }: IProps) {
   const params = useParams();
   const uni = params.universitySlug;
   const fac = params.facultySlug;
@@ -54,9 +55,9 @@ export function AppSidebar({ projects }: IProps) {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="flex justify-between">
+          <SidebarGroupLabel className="flex justify-between items-center">
             <p>Projects</p>
-            <CreateProjectModal />
+            {isProfessor && <CreateProjectModal />}
           </SidebarGroupLabel>
           <SidebarMenu>
             {!projects || projects.length === 0 ? (
@@ -64,13 +65,13 @@ export function AppSidebar({ projects }: IProps) {
                 No Projects Yet
               </div>
             ) : (
-              projects?.map((project) => (
+              projects.map((project) => (
                 <SidebarMenuItem key={project.id} className="mb-1">
                   <Link href={`/app/${uni}/${fac}/projects/${project.slug}`}>
                     <SidebarMenuButton
                       className={cn(
                         "cursor-pointer",
-                        pro === project.slug && "bg-sidebar-border  p-2",
+                        pro === project.slug && "bg-sidebar-border p-2",
                       )}
                     >
                       <span>{project.name}</span>

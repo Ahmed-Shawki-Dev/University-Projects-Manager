@@ -45,7 +45,14 @@ export function LoginForm() {
     try {
       const res = await loginAction(data, slugs);
       if (res.isSuccess) {
-        router.push(`/app/${slugs.universitySlug}/${slugs.facultySlug}`);
+        if (res.data.user.userRole === "Student") {
+          router.push(`/app/${slugs.universitySlug}/${slugs.facultySlug}`);
+        }
+        if (res.data.user.userRole === "Doctor") {
+          router.push(
+            `/app/${slugs.universitySlug}/${slugs.facultySlug}/doctor-dashboard`,
+          );
+        }
         toast.success(res.message || "Login done successfully");
         form.reset();
       } else {

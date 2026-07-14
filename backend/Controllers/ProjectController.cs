@@ -5,6 +5,7 @@ using backend.Mappers;
 using backend.Models;
 using backend.Utils;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -87,39 +88,60 @@ namespace backend.Controllers
         }
 
         // ** Get Sidebar Project (My Project)
-        [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/projects/my-projects")]
-        public async Task<IActionResult> GetStudentJoinedProjects(
-            string universitySlug,
-            string facultySlug
-        )
-        {
-            var userIdClaim = User.FindFirst("userId");
-            if (userIdClaim == null)
-            {
-                return Unauthorized("User context is missing");
-            }
+        // [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/projects/my-projects")]
+        // public async Task<IActionResult> GetStudentJoinedProjects(
+        //     string universitySlug,
+        //     string facultySlug
+        // )
+        // {
+        //     var userIdClaim = User.FindFirst("userId");
+        //     var userRole = User.FindFirst("userRole");
 
-            var studentId = await context
-                .Students.Where(s => s.UserId == Guid.Parse(userIdClaim.Value))
-                .Select(s => s.Id)
-                .FirstOrDefaultAsync();
+        //     if (userIdClaim == null || userRole == null)
+        //     {
+        //         return Unauthorized();
+        //     }
+        //     if (userRole.Value == "Student")
+        //     {
+        //         var studentId = await context
+        //             .Students.Where(s => s.UserId == Guid.Parse(userIdClaim.Value))
+        //             .Select(s => s.Id)
+        //             .FirstOrDefaultAsync();
 
-            if (studentId == Guid.Empty)
-                return CustomBadRequest("The Student Not Exist!", []);
+        //         if (studentId == Guid.Empty)
+        //             return CustomBadRequest("The Student Not Exist!", []);
 
-            var myProjects = await context
-                .Projects.AsNoTracking()
-                .Where(p =>
-                    p.Faculty.University.Slug == universitySlug
-                    && p.Faculty.Slug == facultySlug
-                    && p.Team != null
-                    && p.Team.StudentTeams.Any(st => st.StudentId == studentId)
-                )
-                .Select(p => p.ToDto())
-                .ToListAsync();
+        //         var studentProject = await context
+        //             .Projects.AsNoTracking()
+        //             .Where(p =>
+        //                 p.Faculty.University.Slug == universitySlug
+        //                 && p.Faculty.Slug == facultySlug
+        //                 && p.Team != null
+        //                 && p.Team.StudentTeams.Any(st => st.StudentId == studentId)
+        //             )
+        //             .Select(p => p.ToDto())
+        //             .ToListAsync();
 
-            return Success(myProjects, "Joined projects retrieved successfully");
-        }
+        //         return Success(studentProject, "Joined projects retrieved successfully");
+        //     }
+
+        //     if (userRole.Value == "Doctor")
+        //     {
+        //         var studentProject = await context
+        //             .Projects.AsNoTracking()
+        //             .Where(p =>
+        //                 p.Faculty.University.Slug == universitySlug
+        //                 && p.Faculty.Slug == facultySlug
+        //                 && p.Team != null
+        //                 && p.Team.StudentTeams.Any(st => st.StudentId == studentId)
+        //             )
+        //             .Select(p => p.ToDto())
+        //             .ToListAsync();
+
+        //         return Success(studentProject, "Joined projects retrieved successfully");
+        //     }
+
+        // }
 
         // ** Create a project
         [HttpPost("/api/universities/{universitySlug}/faculties/{facultySlug}/projects")]
@@ -190,7 +212,6 @@ namespace backend.Controllers
         )
         {
             var userIdClaim = User.FindFirst("userId");
-            Console.WriteLine(userIdClaim);
             if (userIdClaim == null)
                 return Unauthorized("User context is missing.");
 
