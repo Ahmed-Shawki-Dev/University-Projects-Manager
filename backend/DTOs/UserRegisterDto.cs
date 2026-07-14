@@ -10,3 +10,5 @@ public record UserRegisterDto(
     [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
         string Password
 );
+
+public record RegisterResponseDto(string Email, string FullName, string StudentCode);

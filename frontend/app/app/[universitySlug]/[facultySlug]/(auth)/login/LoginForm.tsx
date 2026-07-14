@@ -1,13 +1,7 @@
 "use client";
 import { loginAction } from "@/action/auth/login";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
@@ -16,15 +10,22 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useFacultyStore } from "@/stores/facultyStore";
 import { ProjectRouteParams } from "@/types/schema";
 import { LoginInput, loginSchema } from "@/validation/login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export function LoginForm() {
+  const facultyData = useFacultyStore((s) => s.facultyData);
+  const universityName = facultyData?.university?.name;
+  const facultyName = facultyData?.name;
+
   const slugs = useParams() as unknown as ProjectRouteParams;
   const router = useRouter();
   const form = useForm<LoginInput>({
@@ -61,11 +62,26 @@ export function LoginForm() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Login to your account</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
+      <CardHeader className="space-y-4 pb-4 flex flex-col justify-center items-center">
+        <div className="space-y-1.5">
+          <CardTitle className="text-xl font-semibold tracking-tight flex justify-center flex-wrap items-center gap-x-1.5 gap-y-1">
+            <span>Login to</span>
+            {universityName ? (
+              <span className="text-primary font-bold">{universityName}</span>
+            ) : (
+              <Skeleton className="h-4 w-20 rounded-md inline-block animate-pulse" />
+            )}
+          </CardTitle>
+          <div className="min-h-4">
+            {facultyName ? (
+              <p className="text-xs font-medium opacity-60 uppercase tracking-widest">
+                Faculty of {facultyName}
+              </p>
+            ) : (
+              <Skeleton className="h-3 w-40 rounded-md animate-pulse" />
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} id={"login-form"}>
@@ -118,11 +134,11 @@ export function LoginForm() {
               </Button>
               <FieldDescription className="text-center">
                 Don&apos;t have an account?{" "}
-                <a
+                <Link
                   href={`/app/${slugs.universitySlug}/${slugs.facultySlug}/register`}
                 >
                   Sign up
-                </a>
+                </Link>
               </FieldDescription>
             </Field>
           </FieldGroup>

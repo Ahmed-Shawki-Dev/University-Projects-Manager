@@ -26,8 +26,6 @@ const ProjectPage = async ({
     milestonesPromise,
   ]);
 
-  console.log(milestonesRes);
-
   return (
     <div>
       <KanbanBoard

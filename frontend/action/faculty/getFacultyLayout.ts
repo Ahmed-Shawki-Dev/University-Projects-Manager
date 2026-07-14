@@ -9,7 +9,7 @@ export const getFacultyLayoutDetails = async (params: ProjectRouteParams) => {
   const res = await fetchApi<FacultyLayoutDto>(
     `api/universities/${universitySlug}/faculties/${facultySlug}/layout-details`,
     {
-      cache: "no-store",
+      cache: "force-cache",
     },
   );
 

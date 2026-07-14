@@ -1,7 +1,7 @@
 "use server";
 
 import { fetchApi } from "@/lib/fetchApi";
-import { ProjectRouteParams, RegisterDto } from "@/types/schema";
+import { ProjectRouteParams, RegisterResponseDto } from "@/types/schema";
 import { RegisterInput } from "@/validation/register";
 import { revalidatePath } from "next/cache";
 
@@ -11,7 +11,7 @@ export const registerAction = async (
 ) => {
   const { facultySlug, universitySlug } = slugs;
 
-  const res = await fetchApi<RegisterDto>(
+  const res = await fetchApi<RegisterResponseDto>(
     `/api/auth/register/${universitySlug}/${facultySlug}/student`,
     {
       method: "POST",

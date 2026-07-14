@@ -18,6 +18,12 @@ export interface RegisterDto {
   password: string;
 }
 
+export interface RegisterResponseDto {
+  email: string;
+  fullName: string;
+  studentCode: string;
+}
+
 export interface LoginDto {
   email: string;
   password: string;

@@ -85,7 +85,16 @@ namespace backend.Controllers
 
                     await transaction.CommitAsync();
 
-                    return Success(user, "User Added Successfully To The University.");
+                    RegisterResponseDto registerUserResponse = new(
+                        user.Email,
+                        user.FullName,
+                        user.StudentCode
+                    );
+
+                    return Success(
+                        registerUserResponse,
+                        "User Added Successfully To The University."
+                    );
                 }
                 var errorMessages = result.Errors.Select(e => e.Description).ToList();
 
@@ -98,7 +107,7 @@ namespace backend.Controllers
             }
         }
 
-        // Login Controller
+        // ** Login Controller
         [HttpPost("login/{universitySlug}/{facultySlug}")]
         public async Task<IActionResult> MyMethodAsync(
             string universitySlug,

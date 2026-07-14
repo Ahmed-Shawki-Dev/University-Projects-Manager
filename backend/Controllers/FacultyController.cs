@@ -128,6 +128,7 @@ namespace backend.Controllers
 
         // ** Get Layout Details && Check Slugs
         [AllowAnonymous]
+        [ResponseCache(Duration = 3600)]
         [HttpGet("/api/universities/{universitySlug}/faculties/{facultySlug}/layout-details")]
         public async Task<IActionResult> GetLayoutDetails(string universitySlug, string facultySlug)
         {

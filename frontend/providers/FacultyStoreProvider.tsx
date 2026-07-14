@@ -2,14 +2,15 @@
 
 import { useFacultyStore } from "@/stores/facultyStore";
 import { FacultyLayoutDto } from "@/types/schema";
-import { useEffect } from "react";
 
 export function FacultyInitializer({ data }: { data: FacultyLayoutDto }) {
-  const setFacultyData = useFacultyStore((state) => state.setFacultyData);
+  const currentFacultyData = useFacultyStore((state) => state.facultyData);
 
-  useEffect(() => {
-    setFacultyData(data);
-  }, [data, setFacultyData]);
+  console.log(currentFacultyData);
+
+  if (JSON.stringify(currentFacultyData) !== JSON.stringify(data)) {
+    useFacultyStore.setState({ facultyData: data });
+  }
 
   return null;
 }

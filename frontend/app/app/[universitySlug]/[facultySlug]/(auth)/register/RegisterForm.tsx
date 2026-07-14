@@ -2,13 +2,7 @@
 
 import { registerAction } from "@/action/auth/register";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
@@ -17,14 +11,20 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useFacultyStore } from "@/stores/facultyStore";
 import { ProjectRouteParams } from "@/types/schema";
 import { RegisterInput, registerSchema } from "@/validation/register";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export function RegisterForm() {
+  const facultyData = useFacultyStore((s) => s.facultyData);
+  const universityName = facultyData?.university?.name;
+  const facultyName = facultyData?.name;
   const slugs = useParams() as unknown as ProjectRouteParams;
   const router = useRouter();
   const form = useForm<RegisterInput>({
@@ -63,11 +63,26 @@ export function RegisterForm() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Create an account</CardTitle>
-        <CardDescription>
-          Enter your information below to create your account
-        </CardDescription>
+      <CardHeader className="space-y-4 pb-4 flex flex-col justify-center items-center">
+        <div className="space-y-1.5">
+          <CardTitle className="text-xl font-semibold tracking-tight flex justify-center flex-wrap items-center gap-x-1.5 gap-y-1">
+            <span>Register to</span>
+            {universityName ? (
+              <span className="text-primary font-bold">{universityName}</span>
+            ) : (
+              <Skeleton className="h-4 w-20 rounded-md inline-block animate-pulse" />
+            )}
+          </CardTitle>
+          <div className="min-h-4">
+            {facultyName ? (
+              <p className="text-xs font-medium opacity-60 uppercase tracking-widest">
+                Faculty of {facultyName}
+              </p>
+            ) : (
+              <Skeleton className="h-3 w-40 rounded-md animate-pulse" />
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} id="register-form">
@@ -162,11 +177,11 @@ export function RegisterForm() {
                 </Button>
                 <FieldDescription className="px-6 text-center">
                   Already have an account?{" "}
-                  <a
+                  <Link
                     href={`/app/${slugs.universitySlug}/${slugs.facultySlug}/login`}
                   >
                     Sign in
-                  </a>
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

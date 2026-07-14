@@ -1,3 +1,4 @@
+// stores/facultyStore.ts
 import { FacultyLayoutDto } from "@/types/schema";
 import { create } from "zustand";
 
