@@ -16,9 +16,15 @@ interface IProps {
   col: KanbanColumnDto;
   colTasks: TaskDto[];
   milestones?: MilestoneDto[];
+  isProfessor?: boolean;
 }
 
-export default function KanbanColumn({ col, colTasks, milestones }: IProps) {
+export default function KanbanColumn({
+  col,
+  colTasks,
+  milestones,
+  isProfessor,
+}: IProps) {
   const styles = statusStyles[col.id as TaskStatusEnum];
   return (
     <Card
@@ -31,7 +37,7 @@ export default function KanbanColumn({ col, colTasks, milestones }: IProps) {
           >
             {col.title}
           </span>
-          {col.id === TaskStatusEnum.Todo && (
+          {col.id === TaskStatusEnum.Todo && !isProfessor && (
             <AddTaskCard milestones={milestones ?? []} />
           )}
         </CardTitle>
@@ -50,6 +56,7 @@ export default function KanbanColumn({ col, colTasks, milestones }: IProps) {
                   idx={idx}
                   key={colTask.id}
                   milestones={milestones}
+                  isProfessor={isProfessor}
                 />
               );
             })}

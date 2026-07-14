@@ -2,7 +2,7 @@ import { getProjectMilestones } from "@/action/milestones/getProjectMilestones";
 import { getTaskBoards } from "@/action/task/getTaskBoards";
 import KanbanBoard from "@/components/KanbanBoard";
 
-const ProjectPage = async ({
+const DoctorProjectPage = async ({
   params,
 }: {
   params: Promise<{
@@ -25,10 +25,10 @@ const ProjectPage = async ({
         columnsOrder={boardRes?.data?.columnsOrder ?? []}
         tasks={boardRes?.data?.tasks ?? []}
         milestones={milestonesRes?.data ?? []}
-        isProfessor={false}
+        isProfessor={true}
       />
     </div>
   );
 };
 
-export default ProjectPage;
+export default DoctorProjectPage;

@@ -11,9 +11,10 @@ interface IProps {
   colTask: TaskDto;
   idx: number;
   milestones?: MilestoneDto[];
+  isProfessor?: boolean;
 }
 
-const KanbanTaskCard = ({ colTask, idx, milestones }: IProps) => {
+const KanbanTaskCard = ({ colTask, idx, milestones, isProfessor }: IProps) => {
   const [showUpdateTaskCard, setShowUpdateTaskCard] = useState(false);
 
   const milestone = milestones?.find((m) => m.id === colTask.milestoneId);
@@ -30,7 +31,12 @@ const KanbanTaskCard = ({ colTask, idx, milestones }: IProps) => {
   }
 
   return (
-    <Draggable key={colTask.id} draggableId={colTask.id} index={idx}>
+    <Draggable
+      key={colTask.id}
+      draggableId={colTask.id}
+      index={idx}
+      isDragDisabled={isProfessor}
+    >
       {(provided) => (
         <Card
           ref={provided.innerRef}

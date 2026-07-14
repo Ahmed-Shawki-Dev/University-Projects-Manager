@@ -15,9 +15,16 @@ interface IProps {
   columnsOrder: TaskStatusEnum[];
   tasks: TaskDto[];
   milestones?: MilestoneDto[];
+  isProfessor?: boolean;
 }
 
-const KanbanBoard = ({ columnsOrder, columns, tasks, milestones }: IProps) => {
+const KanbanBoard = ({
+  columnsOrder,
+  columns,
+  tasks,
+  milestones,
+  isProfessor = false,
+}: IProps) => {
   const [isPending, startTransition] = useTransition();
 
   const [optimisticColumns, setOptimisticColumns] = useOptimistic(
@@ -27,6 +34,7 @@ const KanbanBoard = ({ columnsOrder, columns, tasks, milestones }: IProps) => {
   );
 
   const onDragEnd = (result: DropResult) => {
+    if (isProfessor) return;
     const { source, destination, draggableId } = result;
     if (!result.destination) return;
     if (result.destination == null) return;
@@ -79,6 +87,7 @@ const KanbanBoard = ({ columnsOrder, columns, tasks, milestones }: IProps) => {
               colTasks={colTasks}
               key={col}
               milestones={milestones}
+              isProfessor={isProfessor}
             />
           );
         })}

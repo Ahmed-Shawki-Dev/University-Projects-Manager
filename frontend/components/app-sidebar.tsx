@@ -65,20 +65,25 @@ export function AppSidebar({ projects, isProfessor = false }: IProps) {
                 No Projects Yet
               </div>
             ) : (
-              projects.map((project) => (
-                <SidebarMenuItem key={project.id} className="mb-1">
-                  <Link href={`/app/${uni}/${fac}/projects/${project.slug}`}>
-                    <SidebarMenuButton
-                      className={cn(
-                        "cursor-pointer",
-                        pro === project.slug && "bg-sidebar-border p-2",
-                      )}
-                    >
-                      <span>{project.name}</span>
-                    </SidebarMenuButton>
-                  </Link>
-                </SidebarMenuItem>
-              ))
+              projects.map((project) => {
+                const url = isProfessor
+                  ? `/app/${uni}/${fac}/doctor-dashboard/projects/${project.slug}`
+                  : `/app/${uni}/${fac}/projects/${project.slug}`;
+                return (
+                  <SidebarMenuItem key={project.id} className="mb-1">
+                    <Link href={url}>
+                      <SidebarMenuButton
+                        className={cn(
+                          "cursor-pointer",
+                          pro === project.slug && "bg-sidebar-border p-2",
+                        )}
+                      >
+                        <span>{project.name}</span>
+                      </SidebarMenuButton>
+                    </Link>
+                  </SidebarMenuItem>
+                );
+              })
             )}
           </SidebarMenu>
         </SidebarGroup>
