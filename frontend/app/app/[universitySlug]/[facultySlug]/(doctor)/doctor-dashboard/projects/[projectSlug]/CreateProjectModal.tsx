@@ -46,9 +46,10 @@ export default function CreateProjectModal() {
     defaultValues: {
       name: "",
       description: "",
-      totalProjectGrade: 0,
+      totalProjectGrade: 1,
       type: undefined,
       deadline: undefined,
+      maxStudents: 1,
     },
   });
 
@@ -113,7 +114,7 @@ export default function CreateProjectModal() {
               )}
             />
           </div>
-          <div className="md:col-span-3">
+          <div className="md:col-span-2">
             <Controller
               name="description"
               control={form.control}
@@ -126,6 +127,31 @@ export default function CreateProjectModal() {
                     aria-invalid={fieldState.invalid}
                     placeholder="Description (optional)"
                     autoComplete="off"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </div>
+          <div className="md:col-span-1">
+            <Controller
+              name="maxStudents"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>Max Students</FieldLabel>
+                  <Input
+                    {...field}
+                    type="number"
+                    min={"0"}
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    placeholder=""
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />

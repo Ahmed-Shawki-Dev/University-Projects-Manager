@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using backend.Data;
 using backend.DTOs;
 using backend.Filters;
@@ -150,6 +151,7 @@ namespace backend.Controllers
         }
 
         // ** Create a project
+        [Authorize(Roles = "Doctor")]
         [HttpPost("/api/universities/{universitySlug}/faculties/{facultySlug}/projects")]
         public async Task<IActionResult> CreateProject(
             [FromRoute] string universitySlug,
@@ -158,6 +160,12 @@ namespace backend.Controllers
         )
         {
             string generatedSlug = SlugHelper.GenerateSlug(projectDto.Name);
+
+            var doctorIdString = User.FindFirstValue("doctorId");
+            if (string.IsNullOrEmpty(doctorIdString))
+                return Unauthorized("Doctor ID not found in token.");
+
+            Guid doctorId = Guid.Parse(doctorIdString);
 
             var facultyId = await context
                 .Faculties.Where(f => f.Slug == facultySlug && f.University.Slug == universitySlug)
@@ -175,23 +183,13 @@ namespace backend.Controllers
 
             var projectModel = projectDto.ToModel();
             projectModel.FacultyId = facultyId.Value;
-            projectModel.AcademicContextId = null;
             projectModel.Slug = generatedSlug;
-            projectModel.Faculty = null!;
+
+            projectModel.ProjectDoctors.Add(
+                new ProjectDoctor { DoctorId = doctorId, Project = projectModel }
+            );
 
             context.Projects.Add(projectModel);
-
-            Team teamModel = new Team
-            {
-                Id = Guid.NewGuid(),
-                Name = $"Team - {projectModel.Name}",
-                Project = projectModel,
-                MaxStudents = projectDto.MaxStudents,
-                LeaderId = null,
-                InviteCode = Guid.NewGuid().ToString().Substring(0, 6).ToUpper(),
-            };
-
-            context.Teams.Add(teamModel);
             await context.SaveChangesAsync();
 
             return CustomCreateAtAction(
@@ -203,7 +201,7 @@ namespace backend.Controllers
                     projectSlug = projectModel.Slug,
                 },
                 projectModel.ToDto(),
-                "Project and its Team Created Successfully"
+                "Project, Team, and Doctor Relationship Created Successfully!"
             );
         }
 
@@ -211,21 +209,18 @@ namespace backend.Controllers
         [HttpPost(
             "/api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}/join"
         )]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> StudentJoinToProject(
             string facultySlug,
             string universitySlug,
             string projectSlug
         )
         {
-            var userIdClaim = User.FindFirst("userId");
-            if (userIdClaim == null)
+            var studentIdClaim = User.FindFirstValue("studentId");
+            if (studentIdClaim == null)
                 return Unauthorized("User context is missing.");
 
-            var student = await context.Students.FirstOrDefaultAsync(s =>
-                s.UserId == Guid.Parse(userIdClaim.Value)
-            );
-            if (student == null)
-                return CustomBadRequest("The Student Not Exist!", []);
+            Guid studentId = Guid.Parse(studentIdClaim);
 
             var team = await context
                 .Teams.Include(t => t.StudentTeams)
@@ -234,7 +229,7 @@ namespace backend.Controllers
             if (team == null)
                 return CustomBadRequest("The Team Not Exist!", []);
 
-            var isAlreadyMember = team.StudentTeams.Any(st => st.StudentId == student.Id);
+            var isAlreadyMember = team.StudentTeams.Any(st => st.StudentId == studentId);
             if (isAlreadyMember)
                 return CustomBadRequest("You are already joined to the team!", []);
 
@@ -243,10 +238,10 @@ namespace backend.Controllers
 
             if (team.LeaderId == null || team.StudentTeams.Count == 0)
             {
-                team.LeaderId = student.Id;
+                team.LeaderId = studentId;
             }
 
-            var newMemberEntry = new StudentTeam { StudentId = student.Id, TeamId = team.Id };
+            var newMemberEntry = new StudentTeam { StudentId = studentId, TeamId = team.Id };
 
             context.StudentTeams.Add(newMemberEntry);
 

@@ -18,7 +18,7 @@ public static class ProjectMapper
 
     public static Project ToModel(this CreateProjectDto projectDto)
     {
-        return new Project
+        var project = new Project
         {
             Name = projectDto.Name,
             Description = projectDto.Description,
@@ -26,5 +26,17 @@ public static class ProjectMapper
             Deadline = projectDto.Deadline.ToUniversalTime(),
             Type = projectDto.Type,
         };
+
+        project.Team = new Team
+        {
+            Id = Guid.NewGuid(),
+            Name = $"Team - {projectDto.Name}",
+            Description = $"Team container for {projectDto.Name}",
+            MaxStudents = projectDto.MaxStudents,
+            LeaderId = null,
+            InviteCode = string.Empty,
+        };
+
+        return project;
     }
 }

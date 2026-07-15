@@ -67,10 +67,11 @@ export interface ProjectDto {
 
 export interface CreateProjectDto {
   name: string;
-  description?: string;
+  description: string;
   totalProjectGrade: number;
-  deadline: string;
+  deadline: Date;
   type: ProjectType;
+  maxStudents: number;
 }
 
 export interface MilestoneDto {
