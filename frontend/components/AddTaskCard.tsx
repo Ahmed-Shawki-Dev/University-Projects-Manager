@@ -2,7 +2,7 @@
 import { createTask } from "@/action/task/createTask";
 import {
   CreateTaskDto,
-  MilestoneDto,
+  MilestoneWithTasksDto,
   ProjectRouteParams,
 } from "@/types/schema";
 import { addTaskSchema } from "@/validation/tasks";
@@ -24,7 +24,11 @@ import {
   SelectValue,
 } from "./ui/select";
 
-const AddTaskCard = ({ milestones }: { milestones: MilestoneDto[] }) => {
+const AddTaskCard = ({
+  milestones,
+}: {
+  milestones: MilestoneWithTasksDto[];
+}) => {
   const { universitySlug, facultySlug, projectSlug } = useParams();
   const [showCard, setShowCard] = useState(false);
   const form = useForm<z.infer<typeof addTaskSchema>>({

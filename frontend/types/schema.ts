@@ -84,6 +84,16 @@ export interface MilestoneDto {
   projectId: string;
 }
 
+export interface MilestoneWithTasksDto {
+  id: string;
+  title: string;
+  description: string | null;
+  maxGrade: number;
+  startDate: string;
+  dueDate: string;
+  tasks: TaskDto[];
+}
+
 export interface CreateMilestoneDto {
   title: string;
   description: string | null;

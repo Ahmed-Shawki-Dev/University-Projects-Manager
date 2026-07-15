@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   KanbanColumnDto,
-  MilestoneDto,
+  MilestoneWithTasksDto,
   statusStyles,
   TaskDto,
   TaskStatusEnum,
@@ -15,7 +15,7 @@ import KanbanTaskCard from "./KanbanTaskCard";
 interface IProps {
   col: KanbanColumnDto;
   colTasks: TaskDto[];
-  milestones?: MilestoneDto[];
+  milestones?: MilestoneWithTasksDto[];
   isProfessor?: boolean;
 }
 

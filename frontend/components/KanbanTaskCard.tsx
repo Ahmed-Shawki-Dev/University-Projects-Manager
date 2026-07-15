@@ -1,6 +1,6 @@
 import { removeTask } from "@/action/task/removeTask";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MilestoneDto, TaskDto } from "@/types/schema";
+import { MilestoneWithTasksDto, TaskDto } from "@/types/schema";
 import { Draggable } from "@hello-pangea/dnd";
 import { Edit, X } from "lucide-react";
 import { useState } from "react";
@@ -10,7 +10,7 @@ import { Button } from "./ui/button";
 interface IProps {
   colTask: TaskDto;
   idx: number;
-  milestones?: MilestoneDto[];
+  milestones?: MilestoneWithTasksDto[];
   isProfessor?: boolean;
 }
 

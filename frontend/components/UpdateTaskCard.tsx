@@ -1,6 +1,6 @@
 "use client";
 import { updateTask } from "@/action/task/updateTask";
-import { MilestoneDto, TaskDto, UpdateTaskDto } from "@/types/schema";
+import { MilestoneWithTasksDto, TaskDto, UpdateTaskDto } from "@/types/schema";
 import { addTaskSchema, UpdateTaskType } from "@/validation/tasks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -25,7 +25,7 @@ const UpdateTaskCard = ({
   onClose,
 }: {
   currentTask: TaskDto;
-  milestones: MilestoneDto[];
+  milestones: MilestoneWithTasksDto[];
   taskId: string;
   onClose: () => void;
 }) => {

@@ -17,3 +17,12 @@ public record CreateMilestoneDto(
     DateTime StartDate,
     DateTime DueDate
 );
+
+public record MilestoneWithTasksDto(
+    Guid Id,
+    string Title,
+    string? Description,
+    decimal MaxGrade,
+    DateTime DueDate,
+    List<TaskDto> Tasks
+);

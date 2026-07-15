@@ -2,7 +2,7 @@
 import { updateTaskStatus } from "@/action/task/updateTaskStatus";
 import {
   KanbanColumnDto,
-  MilestoneDto,
+  MilestoneWithTasksDto,
   TaskDto,
   TaskStatusEnum,
 } from "@/types/schema";
@@ -14,7 +14,7 @@ interface IProps {
   columns: Record<TaskStatusEnum, KanbanColumnDto>;
   columnsOrder: TaskStatusEnum[];
   tasks: TaskDto[];
-  milestones?: MilestoneDto[];
+  milestones?: MilestoneWithTasksDto[];
   isProfessor?: boolean;
 }
 

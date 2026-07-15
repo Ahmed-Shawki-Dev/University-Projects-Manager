@@ -29,5 +29,17 @@ namespace backend.Mappers
                 DueDate = milestoneDto.DueDate.ToUniversalTime(),
             };
         }
+
+        public static MilestoneWithTasksDto ToWithTasksDto(this Milestone milestone)
+        {
+            return new MilestoneWithTasksDto(
+                milestone.Id,
+                milestone.Title,
+                milestone.Description,
+                milestone.MaxGrade,
+                milestone.DueDate,
+                milestone.Tasks.Select(t => t.ToDto()).ToList()
+            );
+        }
     }
 }

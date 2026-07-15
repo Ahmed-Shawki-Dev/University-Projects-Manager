@@ -10,7 +10,7 @@ namespace backend.Controllers
     [Route("api/milestones")]
     public class MilestoneController(ApplicationDbContext context) : BaseApiController
     {
-        // Get All Milestones
+        // ** Get All Milestones
         [HttpGet(
             "/api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}/milestones"
         )]
@@ -33,7 +33,32 @@ namespace backend.Controllers
             return Success(milestonesDto, "Milestones Retrieved Successfully");
         }
 
-        // Get Milestone By ID
+        // ** Get All Milestones With Tasks
+        [HttpGet(
+            "/api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}/milestones-with-tasks"
+        )]
+        public async Task<IActionResult> GetAllMilestonesWithTasks(
+            [FromRoute] string universitySlug,
+            [FromRoute] string facultySlug,
+            [FromRoute] string projectSlug
+        )
+        {
+            var milestonesModels = await context
+                .Milestones.Include(m => m.Tasks)
+                .AsNoTracking()
+                .Where(m =>
+                    m.Project!.Faculty.University.Slug == universitySlug
+                    && m.Project.Faculty.Slug == facultySlug
+                    && m.Project.Slug == projectSlug
+                )
+                .ToListAsync();
+
+            var milestonesDto = milestonesModels.Select(m => m.ToWithTasksDto()).ToList();
+
+            return Success(milestonesDto, "Milestones with their tasks retrieved successfully");
+        }
+
+        // ** Get Milestone By ID
         [HttpGet("{milestoneId:guid}")]
         public async Task<IActionResult> GetMilestoneById([FromRoute] Guid milestoneId)
         {
@@ -56,6 +81,7 @@ namespace backend.Controllers
         [HttpPost(
             "/api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}/milestones"
         )]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> CreateMilestone(
             [FromRoute] string universitySlug,
             [FromRoute] string facultySlug,
