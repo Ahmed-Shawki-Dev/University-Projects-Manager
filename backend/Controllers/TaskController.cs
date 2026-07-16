@@ -2,6 +2,7 @@ using backend.Data;
 using backend.DTOs;
 using backend.Mappers;
 using backend.Models;
+using backend.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,13 +21,14 @@ namespace backend.Controllers
             [FromRoute] string projectSlug
         )
         {
+            if (!SecurityHelper.IsAuthorizedForTenant(User, universitySlug, facultySlug))
+            {
+                return Forbid();
+            }
+
             var projectExists = await context
                 .Projects.AsNoTracking()
-                .AnyAsync(p =>
-                    p.Slug == projectSlug
-                    && p.Faculty.Slug == facultySlug
-                    && p.Faculty.University.Slug == universitySlug
-                );
+                .AnyAsync(p => p.Slug == projectSlug && p.Faculty.Slug == facultySlug);
 
             if (!projectExists)
             {
@@ -38,7 +40,7 @@ namespace backend.Controllers
 
             var tasks = await context
                 .Tasks.AsNoTracking()
-                .Where(t => t.Project.Slug == projectSlug)
+                .Where(t => t.Project.Slug == projectSlug && t.Project.Faculty.Slug == facultySlug)
                 .Select(t => t.ToDto())
                 .ToListAsync();
 
@@ -139,10 +141,13 @@ namespace backend.Controllers
             [FromBody] CreateTaskDto task
         )
         {
+            if (!SecurityHelper.IsAuthorizedForTenant(User, universitySlug, facultySlug))
+            {
+                return Forbid();
+            }
+
             var project = await context.Projects.FirstOrDefaultAsync(p =>
-                p.Faculty.University.Slug == universitySlug
-                && p.Faculty.Slug == facultySlug
-                && p.Slug == projectSlug
+                p.Faculty.Slug == facultySlug && p.Slug == projectSlug
             );
 
             if (project == null)

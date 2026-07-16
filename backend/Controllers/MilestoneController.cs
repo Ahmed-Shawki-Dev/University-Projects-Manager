@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using backend.Data;
 using backend.DTOs;
 using backend.Mappers;
+using backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,13 +22,14 @@ namespace backend.Controllers
             [FromRoute] string projectSlug
         )
         {
+            if (!SecurityHelper.IsAuthorizedForTenant(User, universitySlug, facultySlug))
+            {
+                return Forbid();
+            }
+
             var milestonesDto = await context
                 .Milestones.AsNoTracking()
-                .Where(m =>
-                    m.Project!.Faculty.University.Slug == universitySlug
-                    && m.Project.Faculty.Slug == facultySlug
-                    && m.Project.Slug == projectSlug
-                )
+                .Where(m => m.Project!.Slug == projectSlug)
                 .Select(m => m.ToDto())
                 .ToListAsync();
 
@@ -43,14 +46,15 @@ namespace backend.Controllers
             [FromRoute] string projectSlug
         )
         {
+            if (!SecurityHelper.IsAuthorizedForTenant(User, universitySlug, facultySlug))
+            {
+                return Forbid();
+            }
+
             var milestonesModels = await context
                 .Milestones.Include(m => m.Tasks)
                 .AsNoTracking()
-                .Where(m =>
-                    m.Project!.Faculty.University.Slug == universitySlug
-                    && m.Project.Faculty.Slug == facultySlug
-                    && m.Project.Slug == projectSlug
-                )
+                .Where(m => m.Project!.Slug == projectSlug)
                 .ToListAsync();
 
             var milestonesDto = milestonesModels.Select(m => m.ToWithTasksDto()).ToList();
@@ -89,17 +93,28 @@ namespace backend.Controllers
             [FromBody] CreateMilestoneDto milestoneDto
         )
         {
+            if (!SecurityHelper.IsAuthorizedForTenant(User, universitySlug, facultySlug))
+            {
+                return Forbid();
+            }
+
+            var doctorIdClaim = User.FindFirstValue("doctorId");
+            if (doctorIdClaim == null)
+                return Unauthorized();
+            var doctorId = Guid.Parse(doctorIdClaim);
+
             var projectId = await context
                 .Projects.Where(p =>
-                    p.Slug == projectSlug
-                    && p.Faculty.Slug == facultySlug
-                    && p.Faculty.University.Slug == universitySlug
+                    p.Slug == projectSlug && p.ProjectDoctors.Any(pd => pd.DoctorId == doctorId)
                 )
                 .Select(p => (Guid?)p.Id)
                 .FirstOrDefaultAsync();
 
             if (projectId == null)
-                return CustomNotFound("Project Not Found", []);
+                return CustomNotFound(
+                    "Project Not Found or you are not authorized to manage it",
+                    []
+                );
 
             var milestoneModel = milestoneDto.FromCreateToModel();
             milestoneModel.ProjectId = projectId.Value;

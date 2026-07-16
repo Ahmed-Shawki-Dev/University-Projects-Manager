@@ -1,18 +1,15 @@
 using System.Security.Claims;
 using backend.Data;
 using backend.DTOs;
-using backend.Filters;
 using backend.Mappers;
 using backend.Models;
 using backend.Utils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
-    [ServiceFilter(typeof(CheckFacultyContextFilter))]
     public class ProjectController(ApplicationDbContext context) : BaseApiController
     {
         // ** Get All Projects With Team Details In Explore Page
@@ -62,6 +59,7 @@ namespace backend.Controllers
             return Success(projects, "Projects retrieved successfully");
         }
 
+        // ** Get Project
         [HttpGet(
             "/api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}"
         )]
@@ -71,12 +69,13 @@ namespace backend.Controllers
             [FromRoute] string projectSlug
         )
         {
+            if (!SecurityHelper.IsAuthorizedForTenant(User, universitySlug, facultySlug))
+            {
+                return Forbid();
+            }
+
             var projectDto = await context
-                .Projects.Where(p =>
-                    p.Faculty.University.Slug == universitySlug
-                    && p.Faculty.Slug == facultySlug
-                    && p.Slug == projectSlug
-                )
+                .Projects.Where(p => p.Slug == projectSlug)
                 .Select(p => p.ToDto())
                 .FirstOrDefaultAsync();
 
@@ -104,10 +103,14 @@ namespace backend.Controllers
             }
             if (userRole.Value == "Student")
             {
-                var studentId = await context
-                    .Students.Where(s => s.UserId == Guid.Parse(userIdClaim.Value))
-                    .Select(s => s.Id)
-                    .FirstOrDefaultAsync();
+                var studentIdClaim = User.FindFirstValue("studentId");
+
+                if (string.IsNullOrEmpty(studentIdClaim))
+                {
+                    return Unauthorized("Student ID is missing in your session.");
+                }
+
+                var studentId = Guid.Parse(studentIdClaim);
 
                 if (studentId == Guid.Empty)
                     return CustomBadRequest("The Student Not Exist!", []);
@@ -115,10 +118,7 @@ namespace backend.Controllers
                 var studentProject = await context
                     .Projects.AsNoTracking()
                     .Where(p =>
-                        p.Faculty.University.Slug == universitySlug
-                        && p.Faculty.Slug == facultySlug
-                        && p.Team != null
-                        && p.Team.StudentTeams.Any(st => st.StudentId == studentId)
+                        p.Team != null && p.Team.StudentTeams.Any(st => st.StudentId == studentId)
                     )
                     .Select(p => p.ToDto())
                     .ToListAsync();
@@ -128,13 +128,17 @@ namespace backend.Controllers
 
             if (userRole.Value == "Doctor")
             {
-                var doctorId = await context
-                    .Doctors.Where(s => s.UserId == Guid.Parse(userIdClaim.Value))
-                    .Select(s => s.Id)
-                    .FirstOrDefaultAsync();
+                var doctorIdClaim = User.FindFirstValue("doctorId");
+
+                if (string.IsNullOrEmpty(doctorIdClaim))
+                {
+                    return Unauthorized("Doctor ID is missing in your session.");
+                }
+
+                var doctorId = Guid.Parse(doctorIdClaim);
 
                 if (doctorId == Guid.Empty)
-                    return CustomBadRequest("The Student Not Exist!", []);
+                    return CustomBadRequest("The Doctor Not Exist!", []);
 
                 var doctorProject = await context
                     .Projects.AsNoTracking()
@@ -159,6 +163,11 @@ namespace backend.Controllers
             [FromBody] CreateProjectDto projectDto
         )
         {
+            if (!SecurityHelper.IsAuthorizedForTenant(User, universitySlug, facultySlug))
+            {
+                return Forbid();
+            }
+
             string generatedSlug = SlugHelper.GenerateSlug(projectDto.Name);
 
             var doctorIdString = User.FindFirstValue("doctorId");
@@ -178,6 +187,7 @@ namespace backend.Controllers
             var isProjectExist = await context.Projects.AnyAsync(p =>
                 p.Slug == generatedSlug && p.FacultyId == facultyId.Value
             );
+
             if (isProjectExist)
                 return CustomBadRequest("Project Is Already Exist", []);
 
@@ -216,6 +226,11 @@ namespace backend.Controllers
             string projectSlug
         )
         {
+            if (!SecurityHelper.IsAuthorizedForTenant(User, universitySlug, facultySlug))
+            {
+                return Forbid();
+            }
+
             var studentIdClaim = User.FindFirstValue("studentId");
             if (studentIdClaim == null)
                 return Unauthorized("User context is missing.");
@@ -224,7 +239,9 @@ namespace backend.Controllers
 
             var team = await context
                 .Teams.Include(t => t.StudentTeams)
-                .FirstOrDefaultAsync(t => t.Project.Slug == projectSlug);
+                .FirstOrDefaultAsync(t =>
+                    t.Project.Slug == projectSlug && t.Project.Faculty.Slug == facultySlug
+                );
 
             if (team == null)
                 return CustomBadRequest("The Team Not Exist!", []);
