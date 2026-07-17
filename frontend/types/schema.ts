@@ -190,3 +190,31 @@ export interface ProjectExploreDto {
   isCurrentStudentJoined: boolean;
   isFull: boolean;
 }
+
+// ** Doctor Dashboard Types
+export interface DoctorDashboardStatsCards {
+  projectsCount: number;
+  studentsCount: number;
+  finishedTasksCount: number;
+}
+
+export interface DoctorDashboardMilestoneDto {
+  id: string;
+  title: string;
+  projectName: string;
+  dueDate: string;
+}
+
+export interface DoctorDashboardAlertDto {
+  id: string;
+  projectName: string;
+  alertType: string;
+  message: string;
+  dueDate: string;
+}
+
+export interface DoctorDashboardResponseDto {
+  statsCards: DoctorDashboardStatsCards;
+  upcomingMilestones: DoctorDashboardMilestoneDto[];
+  doctorAlerts: DoctorDashboardAlertDto[];
+}

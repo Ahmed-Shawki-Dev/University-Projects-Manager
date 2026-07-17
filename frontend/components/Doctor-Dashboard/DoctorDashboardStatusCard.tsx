@@ -4,11 +4,13 @@ import type { LucideIcon } from "lucide-react";
 interface IProps {
   title: string;
   icon: LucideIcon;
+  value: number;
 }
 
 export default function DoctorDashboardStatusCard({
   title,
   icon: Icon,
+  value,
 }: IProps) {
   return (
     <Card className="shadow-sm">
@@ -19,10 +21,7 @@ export default function DoctorDashboardStatusCard({
         <Icon className="w-4 h-4 text-muted-foreground opacity-70" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">12</div>
-        <p className="text-xs text-muted-foreground mt-1">
-          +2 created this week
-        </p>
+        <div className="text-2xl font-bold">{value}</div>
       </CardContent>
     </Card>
   );
