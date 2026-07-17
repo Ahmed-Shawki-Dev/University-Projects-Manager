@@ -7,7 +7,7 @@ interface IProps {
   value: number;
 }
 
-export default function DoctorDashboardStatusCard({
+export default function DashboardStatsCard({
   title,
   icon: Icon,
   value,

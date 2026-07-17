@@ -1,6 +1,6 @@
 import { getDoctorDashboardData } from "@/action/dashboard/getDoctorDashboardData";
+import DashboardStatsCard from "@/components/DashboardStatsCard";
 import DoctorDashboardAlerts from "@/components/Doctor-Dashboard/DoctorDashboardAlerts";
-import DoctorDashboardStatusCard from "@/components/Doctor-Dashboard/DoctorDashboardStatusCard";
 import UpcomingMilestonesList from "@/components/Doctor-Dashboard/UpcomingMilestonesList";
 import { Lightbulb } from "lucide-react";
 
@@ -22,17 +22,17 @@ export default async function DoctorDashboardPage({ params }: IProps) {
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <DoctorDashboardStatusCard
+        <DashboardStatsCard
           title="Active projects"
           icon={Lightbulb}
           value={dashboardData.statsCards.projectsCount}
         />
-        <DoctorDashboardStatusCard
+        <DashboardStatsCard
           title="Active students"
           icon={Lightbulb}
           value={dashboardData.statsCards.studentsCount}
         />
-        <DoctorDashboardStatusCard
+        <DashboardStatsCard
           title="Finished tasks"
           icon={Lightbulb}
           value={dashboardData.statsCards.finishedTasksCount}

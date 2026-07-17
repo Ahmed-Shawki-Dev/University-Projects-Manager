@@ -218,3 +218,25 @@ export interface DoctorDashboardResponseDto {
   upcomingMilestones: DoctorDashboardMilestoneDto[];
   doctorAlerts: DoctorDashboardAlertDto[];
 }
+
+// ** Student Dashboard Types
+export interface StudentDashboardCardStats {
+  pendingTasks: number;
+  inProgressTasks: number;
+  overdueMilestones: number;
+}
+
+export interface StudentDashboardCurrentMilestoneProgressDto {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  totalTasksCount: number;
+  completedTasksCount: number;
+  progressPercentage: number;
+}
+
+export interface StudentDashboardResponseDto {
+  stats: StudentDashboardCardStats;
+  currentMilestone: StudentDashboardCurrentMilestoneProgressDto | null;
+}
