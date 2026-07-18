@@ -33,7 +33,7 @@ const ProjectPage = async ({
         <TeamModal members={teamMembersRes?.data ?? []} />
       </div>
 
-      <div className="w-full h-[calc(100vh-180px)] min-h-0">
+      <div className="w-full h-fit max-h-[calc(100vh-180px)] min-h-0">
         <KanbanBoard
           columns={boardRes?.data?.columns ?? []}
           columnsOrder={boardRes?.data?.columnsOrder ?? []}

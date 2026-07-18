@@ -11,7 +11,7 @@ interface IProps {
 export default async function DoctorDashboardPage({ params }: IProps) {
   const slugs = await params;
   const dashboardRes = await getDoctorDashboardData(slugs);
-  const dashboardData = dashboardRes.data;
+  const dashboardData = dashboardRes?.data;
 
   return (
     <div className="flex flex-col h-full container mx-auto px-4 py-8 space-y-8">
@@ -25,28 +25,28 @@ export default async function DoctorDashboardPage({ params }: IProps) {
         <DashboardStatsCard
           title="Active projects"
           icon={Lightbulb}
-          value={dashboardData.statsCards.projectsCount}
+          value={dashboardData?.statsCards.projectsCount}
         />
         <DashboardStatsCard
           title="Active students"
           icon={Lightbulb}
-          value={dashboardData.statsCards.studentsCount}
+          value={dashboardData?.statsCards.studentsCount}
         />
         <DashboardStatsCard
           title="Finished tasks"
           icon={Lightbulb}
-          value={dashboardData.statsCards.finishedTasksCount}
+          value={dashboardData?.statsCards.finishedTasksCount}
         />
       </div>
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <UpcomingMilestonesList
-            upcomingMilestones={dashboardData.upcomingMilestones}
+            upcomingMilestones={dashboardData?.upcomingMilestones}
           />
         </div>
 
         <div className="flex flex-col gap-4">
-          <DoctorDashboardAlerts doctorAlerts={dashboardData.doctorAlerts} />
+          <DoctorDashboardAlerts doctorAlerts={dashboardData?.doctorAlerts} />
         </div>
       </div>
     </div>

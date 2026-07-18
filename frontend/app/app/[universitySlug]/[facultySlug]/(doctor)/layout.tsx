@@ -3,6 +3,7 @@ import { getMyProjects } from "@/action/project/getMyProjects";
 import AppHeader from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { redirect } from "next/navigation";
 
 interface IProps {
   children: React.ReactNode;
@@ -14,6 +15,10 @@ export default async function ProfessorLayout({ children, params }: IProps) {
   const res = await getMyProjects({ universitySlug, facultySlug });
   const projects = res?.data ?? [];
   const userClaims = await getCurrentUser();
+
+  if (!userClaims || userClaims.userRole !== "Doctor") {
+    redirect(`/app/${universitySlug}/${facultySlug}/projects`);
+  }
 
   return (
     <SidebarProvider>

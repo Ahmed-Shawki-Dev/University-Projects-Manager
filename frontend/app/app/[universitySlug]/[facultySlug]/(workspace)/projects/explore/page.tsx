@@ -1,3 +1,4 @@
+import { getCurrentUser } from "@/action/auth/me";
 import { getAllProjectsExplorePage } from "@/action/project/getAllProjectsExplorePage";
 import { Button } from "@/components/ui/button";
 import { ProjectType } from "@/types/schema";
@@ -28,6 +29,8 @@ export default async function ExploreProjectsPage({
     query.projectType,
   );
 
+  const userClaims = await getCurrentUser();
+
   return (
     <div className="w-full space-y-6">
       <div className="flex items-center justify-between border-b pb-4">
@@ -40,7 +43,11 @@ export default async function ExploreProjectsPage({
           </p>
         </div>
         <Link
-          href={`/app/universities/${paramsRoutes.universitySlug}/faculties/${paramsRoutes.facultySlug}/projects`}
+          href={
+            userClaims?.userRole === "Student"
+              ? `/app/${paramsRoutes.universitySlug}/${paramsRoutes.facultySlug}/projects`
+              : `/app/${paramsRoutes.universitySlug}/${paramsRoutes.facultySlug}/doctor-dashboard`
+          }
         >
           <Button
             variant="ghost"

@@ -10,7 +10,7 @@ interface IProps {
 export default async function StudentDashboardPage({ params }: IProps) {
   const slugs = await params;
   const dashboardRes = await getStudentDashboardData(slugs);
-  const dashboardData = dashboardRes.data;
+  const dashboardData = dashboardRes?.data;
 
   return (
     <div className="flex flex-col h-full container mx-auto px-4 py-8 space-y-8">
@@ -24,23 +24,23 @@ export default async function StudentDashboardPage({ params }: IProps) {
         <DashboardStatsCard
           title="Pending Tasks"
           icon={CheckCircle2}
-          value={dashboardData.stats.pendingTasks}
+          value={dashboardData?.stats.pendingTasks}
         />
         <DashboardStatsCard
           title="Tasks In Progress"
           icon={Clock}
-          value={dashboardData.stats.inProgressTasks}
+          value={dashboardData?.stats.inProgressTasks}
         />
         <DashboardStatsCard
           title="Overdue Milestones"
           icon={AlertTriangle}
-          value={dashboardData.stats.overdueMilestones}
+          value={dashboardData?.stats.overdueMilestones}
         />
       </div>
       <div className="flex-1 ">
         <div className="">
           <CurrentMilestoneProgress
-            milestone={dashboardData.currentMilestone}
+            milestone={dashboardData?.currentMilestone}
           />
         </div>
       </div>
