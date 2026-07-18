@@ -2,6 +2,7 @@ import { getProjectMilestones } from "@/action/milestones/getProjectMilestones";
 import { getTaskBoards } from "@/action/task/getTaskBoards";
 import { getTeamMembers } from "@/action/teams/getTeamMembers";
 import KanbanBoard from "@/components/KanbanBoard";
+import ProjectSettingsModal from "@/components/Settings/ProjectSettingsModal";
 import TeamModal from "@/components/Team/TeamModal";
 
 const ProjectPage = async ({
@@ -29,8 +30,10 @@ const ProjectPage = async ({
             {slugs.projectSlug.split("-").slice(0, -1).join(" ")}
           </h1>
         </div>
-
-        <TeamModal members={teamMembersRes?.data ?? []} />
+        <div className="flex gap-2 items-center">
+          <TeamModal members={teamMembersRes?.data ?? []} />
+          <ProjectSettingsModal slugs={slugs} />
+        </div>
       </div>
 
       <div className="w-full h-fit max-h-[calc(100vh-180px)] min-h-0">
