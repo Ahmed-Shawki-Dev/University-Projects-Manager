@@ -17,3 +17,18 @@ export interface PagedResponse<T> {
 }
 
 export type PaginatedApiResponse<T> = ApiResponse<PagedResponse<T>>;
+
+// User Claims
+export interface CurrentUserClaims {
+  userId: string;
+  userRole: string;
+  fullName: string;
+  email: string;
+  universitySlug: string;
+  facultySlug: string;
+  studentId: string;
+  studentCode: string;
+  exp: number;
+  iss: string;
+  aud: string;
+}

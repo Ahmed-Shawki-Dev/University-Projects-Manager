@@ -1,3 +1,4 @@
+import { getCurrentUser } from "@/action/auth/me";
 import { getMyProjects } from "@/action/project/getMyProjects";
 import AppHeader from "@/components/app-header";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -12,10 +13,15 @@ export default async function ProfessorLayout({ children, params }: IProps) {
   const { universitySlug, facultySlug } = await params;
   const res = await getMyProjects({ universitySlug, facultySlug });
   const projects = res?.data ?? [];
+  const userClaims = await getCurrentUser();
 
   return (
     <SidebarProvider>
-      <AppSidebar projects={projects} isProfessor={true} />
+      <AppSidebar
+        projects={projects}
+        isProfessor={true}
+        userClaims={userClaims ?? undefined}
+      />
 
       <main className="flex flex-1 flex-col min-h-screen overflow-hidden">
         <AppHeader />

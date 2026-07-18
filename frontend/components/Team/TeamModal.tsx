@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { getAvatarIcon } from "@/lib/utils";
 import { TeamMemberDto } from "@/types/schema";
 import { Crown, Users } from "lucide-react";
 import { Badge } from "../ui/badge";
@@ -16,15 +17,6 @@ interface IProps {
 }
 
 export default function TeamModal({ members }: IProps) {
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .substring(0, 2);
-  };
-
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -59,7 +51,7 @@ export default function TeamModal({ members }: IProps) {
                         : "bg-muted text-muted-foreground text-xs font-semibold"
                     }
                   >
-                    {getInitials(member.name)}
+                    {getAvatarIcon(member.name)}
                   </AvatarFallback>
                 </Avatar>
 

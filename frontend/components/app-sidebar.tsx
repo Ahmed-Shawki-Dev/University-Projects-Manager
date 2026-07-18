@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useFacultyStore } from "@/stores/facultyStore";
+import { CurrentUserClaims } from "@/types/api";
 import { ProjectDto } from "@/types/schema";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -22,9 +23,14 @@ import { Skeleton } from "./ui/skeleton";
 interface IProps {
   projects: ProjectDto[];
   isProfessor?: boolean;
+  userClaims?: CurrentUserClaims;
 }
 
-export function AppSidebar({ projects, isProfessor = false }: IProps) {
+export function AppSidebar({
+  projects,
+  isProfessor = false,
+  userClaims,
+}: IProps) {
   const params = useParams();
   const uni = params.universitySlug;
   const fac = params.facultySlug;
@@ -89,7 +95,7 @@ export function AppSidebar({ projects, isProfessor = false }: IProps) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="border-t">
-        <NavUser user={{ name: "Shawky", email: "shawky@uni.edu" }} />
+        <NavUser user={userClaims} />
       </SidebarFooter>
     </Sidebar>
   );

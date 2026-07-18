@@ -27,13 +27,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { getAvatarIcon } from "@/lib/utils";
+import { CurrentUserClaims } from "@/types/api";
 import { ChevronsUpDown, LogOut, Moon, Settings, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useParams } from "next/navigation";
 import { useTransition } from "react";
 
 interface NavUserProps {
-  user: { name: string; email: string; avatar?: string };
+  user?: CurrentUserClaims;
 }
 
 export default function NavUser({ user }: NavUserProps) {
@@ -62,15 +64,15 @@ export default function NavUser({ user }: NavUserProps) {
               className="data-[state=open]:bg-sidebar-accent"
             >
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={user?.fullName} alt={user?.fullName} />
                 <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-semibold">
-                  SH
+                  {getAvatarIcon(user?.fullName ?? "")}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
+                <span className="truncate font-semibold">{user?.fullName}</span>
                 <span className="truncate text-xs text-muted-foreground">
-                  {user.email}
+                  {user?.email}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
@@ -86,13 +88,15 @@ export default function NavUser({ user }: NavUserProps) {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-semibold">
-                    SH
+                    {getAvatarIcon(user?.fullName ?? "")}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate font-semibold">
+                    {user?.fullName}
+                  </span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {user.email}
+                    {user?.email}
                   </span>
                 </div>
               </div>
