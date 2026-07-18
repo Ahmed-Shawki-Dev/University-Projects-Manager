@@ -43,7 +43,6 @@ export default async function StudentDashboardPage({ params }: IProps) {
             milestone={dashboardData.currentMilestone}
           />
         </div>
-        <div className="lg:col-span-1"></div>
       </div>
     </div>
   );

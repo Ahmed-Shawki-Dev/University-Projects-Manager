@@ -14,8 +14,6 @@ export default async function FacultyLayout({ children, params }: IProps) {
     (await params) as unknown as ProjectRouteParams,
   );
 
-  console.log(faculty);
-
   if (faculty.status === 404) {
     notFound();
   }

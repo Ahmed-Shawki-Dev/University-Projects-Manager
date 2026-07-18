@@ -76,7 +76,7 @@ const KanbanBoard = ({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex gap-4 mt-6 w-full min-w-full items-start justify-start h-[calc(100vh-160px)] overflow-x-auto pb-4 px-2 snap-x">
+      <div className="flex gap-4 mt-6 w-full min-w-full items-start justify-start h-full overflow-x-auto pb-4 px-2 snap-x">
         {columnsOrder.map((col) => {
           const colTasks = tasks.filter((task) =>
             optimisticColumns[col].taskIds.includes(task.id),

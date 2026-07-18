@@ -240,3 +240,10 @@ export interface StudentDashboardResponseDto {
   stats: StudentDashboardCardStats;
   currentMilestone: StudentDashboardCurrentMilestoneProgressDto | null;
 }
+
+export interface TeamMemberDto {
+  name: string;
+  email: string;
+  isLeader: boolean;
+  isMe: boolean;
+}
