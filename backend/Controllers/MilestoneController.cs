@@ -103,23 +103,38 @@ namespace backend.Controllers
                 return Unauthorized();
             var doctorId = Guid.Parse(doctorIdClaim);
 
-            var projectId = await context
+            var projectData = await context
                 .Projects.Where(p =>
                     p.Slug == projectSlug && p.ProjectDoctors.Any(pd => pd.DoctorId == doctorId)
                 )
-                .Select(p => (Guid?)p.Id)
+                .Select(p => new { Id = (Guid?)p.Id, TotalGrade = p.TotalProjectGrade })
                 .FirstOrDefaultAsync();
 
-            if (projectId == null)
+            if (projectData?.Id == null)
                 return CustomNotFound(
                     "Project Not Found or you are not authorized to manage it",
                     []
                 );
 
+            var currentTotalMilestonesGrade = await context
+                .Milestones.Where(m => m.ProjectId == projectData.Id.Value)
+                .SumAsync(m => m.MaxGrade);
+
+            if ((currentTotalMilestonesGrade + milestoneDto.MaxGrade) > projectData.TotalGrade)
+            {
+                return CustomBadRequest(
+                    $"Cannot add milestone with {milestoneDto.MaxGrade} grades. "
+                        + $"The project remaining capacity is only {projectData.TotalGrade - currentTotalMilestonesGrade} grades "
+                        + $"(Current total: {currentTotalMilestonesGrade}/{projectData.TotalGrade}).",
+                    []
+                );
+            }
+
             var milestoneModel = milestoneDto.FromCreateToModel();
-            milestoneModel.ProjectId = projectId.Value;
+            milestoneModel.ProjectId = projectData.Id.Value;
 
             context.Milestones.Add(milestoneModel);
+
             await context.SaveChangesAsync();
 
             return CustomCreateAtAction(

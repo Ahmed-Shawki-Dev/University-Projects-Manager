@@ -247,3 +247,16 @@ export interface TeamMemberDto {
   isLeader: boolean;
   isMe: boolean;
 }
+
+// ** Grading System
+export interface StudentMilestoneGradeDto {
+  studentId: string;
+  fullName: string;
+  email: string;
+  currentGrade: number | null;
+}
+
+export interface SubmitStudentGradeDto {
+  studentId: string;
+  grade: number;
+}

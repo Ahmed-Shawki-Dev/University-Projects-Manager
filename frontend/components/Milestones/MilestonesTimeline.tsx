@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/accordion";
 import { MilestoneWithTasksDto, TaskDto, TaskStatusEnum } from "@/types/schema";
 import { Award, CalendarDays } from "lucide-react";
+import GradeStudentsModal from "../Grading/GradeStudentsModal";
 import { Badge } from "../ui/badge";
 import CreateMilestoneModal from "./CreateMilestoneModal";
 
@@ -67,23 +68,31 @@ export default function MilestonesTimeline({
                           </span>
                         </div>
                       </div>
-
-                      <Badge
-                        variant={
-                          totalTasks > 0 && completedTasks === totalTasks
-                            ? "default"
-                            : "secondary"
-                        }
-                        className="w-fit text-xs"
-                      >
-                        {totalTasks > 0
-                          ? `${completedTasks}/${totalTasks} Tasks Done`
-                          : "0 Tasks"}
-                      </Badge>
+                      <div className="flex flex-row items-center gap-1">
+                        <Badge
+                          variant={
+                            totalTasks > 0 && completedTasks === totalTasks
+                              ? "default"
+                              : "secondary"
+                          }
+                          className="w-fit text-xs"
+                        >
+                          {totalTasks > 0
+                            ? `${completedTasks}/${totalTasks} Tasks Done`
+                            : "0 Tasks"}
+                        </Badge>
+                      </div>
                     </div>
                   </AccordionTrigger>
 
                   <AccordionContent className="py-4 border-t space-y-2">
+                    <div className="flex items-center justify-center px-2">
+                      <GradeStudentsModal
+                        milestoneId={milestone?.id}
+                        maxGrade={milestone?.maxGrade}
+                      />
+                    </div>
+
                     {totalTasks === 0 ? (
                       <p className="text-xs text-muted-foreground/70 pl-2">
                         No tasks linked to this milestone yet.
