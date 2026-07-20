@@ -17,5 +17,8 @@ namespace backend.Models
         // Auth System
         public Guid UserId { get; set; }
         public AppUser User { get; set; } = null!;
+
+        // Relation Between Student And There Tasks
+        public List<TaskStudent> TaskStudents { get; set; } = new();
     }
 }

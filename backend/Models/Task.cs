@@ -20,5 +20,8 @@ namespace backend.Models
 
         public Guid? MilestoneId { get; set; }
         public Milestone? Milestone { get; set; }
+
+        // Relation Between Student And There Tasks
+        public List<TaskStudent> TaskStudents { get; set; } = new();
     }
 }
