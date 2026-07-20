@@ -7,6 +7,7 @@ import {
   statusStyles,
   TaskDto,
   TaskStatusEnum,
+  TeamMemberDto,
 } from "@/types/schema";
 import { Droppable } from "@hello-pangea/dnd";
 import AddTaskCard from "./AddTaskCard";
@@ -17,6 +18,7 @@ interface IProps {
   colTasks: TaskDto[];
   milestones?: MilestoneWithTasksDto[];
   isProfessor?: boolean;
+  teamMembers: TeamMemberDto[];
 }
 
 export default function KanbanColumn({
@@ -24,6 +26,7 @@ export default function KanbanColumn({
   colTasks,
   milestones,
   isProfessor,
+  teamMembers,
 }: IProps) {
   const styles = statusStyles[col.id as TaskStatusEnum];
   return (
@@ -38,7 +41,10 @@ export default function KanbanColumn({
             {col.title}
           </span>
           {col.id === TaskStatusEnum.Todo && !isProfessor && (
-            <AddTaskCard milestones={milestones ?? []} />
+            <AddTaskCard
+              milestones={milestones ?? []}
+              teamMembers={teamMembers}
+            />
           )}
         </CardTitle>
       </CardHeader>
@@ -57,6 +63,7 @@ export default function KanbanColumn({
                   key={colTask.id}
                   milestones={milestones}
                   isProfessor={isProfessor}
+                  teamMembers={teamMembers}
                 />
               );
             })}

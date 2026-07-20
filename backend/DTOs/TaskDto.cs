@@ -7,11 +7,24 @@ public record TaskDto(
     string Title,
     string Description,
     TaskStatusEnum Status,
-    Guid? MilestoneId
+    Guid? MilestoneId,
+    List<AssignedStudentDto> AssignedStudents
 );
 
-public record CreateTaskDto(string Title, string? Description, Guid? MilestoneId);
+public record CreateTaskDto(
+    string Title,
+    string? Description,
+    Guid? MilestoneId,
+    List<Guid> StudentIds
+);
 
-public record UpdateTaskDto(string Title, string? Description, Guid? MilestoneId);
+public record UpdateTaskDto(
+    string Title,
+    string? Description,
+    Guid? MilestoneId,
+    List<Guid> StudentIds
+);
 
 public record UpdateTaskStatusDto(TaskStatusEnum Status);
+
+public record AssignedStudentDto(Guid Id, string Name);

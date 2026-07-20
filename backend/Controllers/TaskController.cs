@@ -38,11 +38,15 @@ namespace backend.Controllers
                 );
             }
 
-            var tasks = await context
+            var tasksEntities = await context
                 .Tasks.AsNoTracking()
+                .Include(t => t.TaskStudents)
+                    .ThenInclude(ts => ts.Student)
+                        .ThenInclude(s => s.User)
                 .Where(t => t.Project.Slug == projectSlug && t.Project.Faculty.Slug == facultySlug)
-                .Select(t => t.ToDto())
                 .ToListAsync();
+
+            var tasks = tasksEntities.Select(t => t.ToDto()).ToList();
 
             var columns = new Dictionary<TaskStatusEnum, KanbanColumnDto>
             {
@@ -146,9 +150,9 @@ namespace backend.Controllers
                 return Forbid();
             }
 
-            var project = await context.Projects.FirstOrDefaultAsync(p =>
-                p.Faculty.Slug == facultySlug && p.Slug == projectSlug
-            );
+            var project = await context
+                .Projects.Include(p => p.Team)
+                .FirstOrDefaultAsync(p => p.Faculty.Slug == facultySlug && p.Slug == projectSlug);
 
             if (project == null)
             {
@@ -169,11 +173,44 @@ namespace backend.Controllers
                 }
             }
 
+            if (task.StudentIds.Count > 0)
+            {
+                var validStudentsCount = await context
+                    .StudentTeams.Where(st =>
+                        st.TeamId == project.Team!.Id && task.StudentIds.Contains(st.StudentId)
+                    )
+                    .CountAsync();
+
+                if (task.StudentIds.Count != validStudentsCount)
+                {
+                    return CustomBadRequest(
+                        "All assigned students must be members of the specified project team.",
+                        []
+                    );
+                }
+            }
+
             var taskModel = task.ToModel();
             taskModel.ProjectId = project.Id;
 
             context.Tasks.Add(taskModel);
             await context.SaveChangesAsync();
+
+            var createdTaskDto = await context
+                .Tasks.Where(t => t.Id == taskModel.Id)
+                .Select(t => new TaskDto(
+                    t.Id,
+                    t.Title,
+                    t.Description ?? "",
+                    t.Status,
+                    t.MilestoneId,
+                    t.TaskStudents.Select(ts => new AssignedStudentDto(
+                            ts.StudentId,
+                            ts.Student.User.FullName
+                        ))
+                        .ToList()
+                ))
+                .FirstOrDefaultAsync();
 
             return CustomCreateAtAction(
                 nameof(GetById),
@@ -183,7 +220,7 @@ namespace backend.Controllers
                     facultySlug,
                     taskId = taskModel.Id,
                 },
-                taskModel.ToDto(),
+                createdTaskDto,
                 "Task Created Successfully"
             );
         }
@@ -192,14 +229,13 @@ namespace backend.Controllers
         [HttpDelete("/api/tasks/{taskId}")]
         public async Task<IActionResult> RemoveTask(Guid taskId)
         {
-            var task = await context.Tasks.FindAsync(taskId);
-            if (task == null)
+            var deletedCount = await context.Tasks.Where(t => t.Id == taskId).ExecuteDeleteAsync();
+
+            if (deletedCount == 0)
             {
                 return CustomNotFound("Task Not Found", []);
             }
 
-            context.Tasks.Remove(task);
-            await context.SaveChangesAsync();
             return NoContent();
         }
 
@@ -210,7 +246,11 @@ namespace backend.Controllers
             [FromBody] UpdateTaskDto updateTask
         )
         {
-            var taskModel = await context.Tasks.FindAsync(taskId);
+            var taskModel = await context
+                .Tasks.Include(t => t.Project)
+                    .ThenInclude(p => p.Team)
+                .FirstOrDefaultAsync(t => t.Id == taskId);
+
             if (taskModel == null)
             {
                 return CustomNotFound("Task Not Found", []);
@@ -232,9 +272,49 @@ namespace backend.Controllers
             }
             taskModel.MilestoneId = updateTask.MilestoneId;
 
+            if (updateTask.StudentIds.Count > 0)
+            {
+                var targetTeamId = taskModel.Project.Team!.Id;
+
+                var validStudentsCount = await context
+                    .StudentTeams.Where(st =>
+                        st.TeamId == targetTeamId && updateTask.StudentIds.Contains(st.StudentId)
+                    )
+                    .CountAsync();
+
+                if (updateTask.StudentIds.Count != validStudentsCount)
+                {
+                    return CustomBadRequest(
+                        "All assigned students must be members of the specified project team.",
+                        []
+                    );
+                }
+            }
+            await context.TaskStudents.Where(ts => ts.TaskId == taskId).ExecuteDeleteAsync();
+
+            if (updateTask.StudentIds.Count > 0)
+            {
+                var taskStudentsModel = updateTask
+                    .StudentIds.Select(id => new TaskStudent { StudentId = id, TaskId = taskId })
+                    .ToList();
+
+                context.TaskStudents.AddRange(taskStudentsModel);
+            }
+
             await context.SaveChangesAsync();
 
-            return Success(taskModel.ToDto(), "Task Updated Successfully");
+            var responseDto = new TaskDto(
+                taskModel.Id,
+                taskModel.Title,
+                taskModel.Description ?? "",
+                taskModel.Status,
+                taskModel.MilestoneId,
+                updateTask
+                    .StudentIds.Select(id => new AssignedStudentDto(id, "Assigned Student"))
+                    .ToList()
+            );
+
+            return Success(responseDto, "Task Updated Successfully");
         }
     }
 }

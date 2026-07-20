@@ -102,23 +102,31 @@ export interface CreateMilestoneDto {
   dueDate: string;
 }
 
+export interface AssignedStudentDto {
+  id: string;
+  name: string;
+}
+
 export interface TaskDto {
   id: string;
   title: string;
   description: string | null;
   status: TaskStatusEnum;
   milestoneId: string | null;
+  assignedStudents: AssignedStudentDto[];
 }
 
 export interface CreateTaskDto {
   title: string;
   description: string | null;
   milestoneId: string | null;
+  studentIds: string[];
 }
 export interface UpdateTaskDto {
   title: string;
   description: string | null;
   milestoneId: string | null;
+  studentIds: string[];
 }
 
 export interface UpdateTaskStatusDto {
@@ -242,6 +250,7 @@ export interface StudentDashboardResponseDto {
 }
 
 export interface TeamMemberDto {
+  id: string;
   name: string;
   email: string;
   isLeader: boolean;

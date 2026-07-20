@@ -5,6 +5,7 @@ import {
   MilestoneWithTasksDto,
   TaskDto,
   TaskStatusEnum,
+  TeamMemberDto,
 } from "@/types/schema";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { useOptimistic, useTransition } from "react";
@@ -16,6 +17,7 @@ interface IProps {
   tasks: TaskDto[];
   milestones?: MilestoneWithTasksDto[];
   isProfessor?: boolean;
+  teamMembers: TeamMemberDto[];
 }
 
 const KanbanBoard = ({
@@ -24,6 +26,7 @@ const KanbanBoard = ({
   tasks,
   milestones,
   isProfessor = false,
+  teamMembers,
 }: IProps) => {
   const [isPending, startTransition] = useTransition();
 
@@ -88,6 +91,7 @@ const KanbanBoard = ({
               key={col}
               milestones={milestones}
               isProfessor={isProfessor}
+              teamMembers={teamMembers}
             />
           );
         })}

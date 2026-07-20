@@ -33,6 +33,7 @@ public class TeamController(ApplicationDbContext context) : BaseApiController
                 st.Team!.Project.Slug == projectSlug && st.Team.Project.Faculty!.Slug == facultySlug
             )
             .Select(st => new TeamMemberDto(
+                st.StudentId,
                 st.Student.User.FullName,
                 st.Student.User.Email!,
                 st.StudentId == st.Team.LeaderId,

@@ -43,6 +43,7 @@ const ProjectPage = async ({
           tasks={boardRes?.data?.tasks ?? []}
           milestones={milestonesRes?.data ?? []}
           isProfessor={false}
+          teamMembers={teamMembersRes.data ?? []}
         />
       </div>
     </div>

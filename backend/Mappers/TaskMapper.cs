@@ -1,28 +1,36 @@
 using backend.DTOs;
+using backend.Models;
 
 namespace backend.Mappers
 {
     public static class TaskMapper
     {
-        public static TaskDto ToDto(this backend.Models.Task task)
+        public static TaskDto ToDto(this Models.Task task)
         {
             return new TaskDto(
                 task.Id,
                 task.Title,
                 task.Description!,
                 task.Status,
-                task.MilestoneId
+                task.MilestoneId,
+                task.TaskStudents.Select(ts => new AssignedStudentDto(
+                        ts.StudentId,
+                        ts.Student.User.FullName
+                    ))
+                    .ToList()
             );
         }
 
-        public static backend.Models.Task ToModel(this CreateTaskDto task)
+        public static Models.Task ToModel(this CreateTaskDto task)
         {
-            return new backend.Models.Task
+            return new Models.Task
             {
                 Title = task.Title,
                 Description = task.Description!,
-                // Status = task.Status,
                 MilestoneId = task.MilestoneId,
+                TaskStudents = task
+                    .StudentIds.Select(id => new TaskStudent { StudentId = id })
+                    .ToList(),
             };
         }
     }

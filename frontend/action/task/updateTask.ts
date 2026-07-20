@@ -1,10 +1,14 @@
 "use server";
 
 import { fetchApi } from "@/lib/fetchApi";
-import { UpdateTaskDto } from "@/types/schema";
+import { ProjectRouteParams, UpdateTaskDto } from "@/types/schema";
 import { revalidatePath } from "next/cache";
 
-export const updateTask = async (taskId: string, data: UpdateTaskDto) => {
+export const updateTask = async (
+  taskId: string,
+  data: UpdateTaskDto,
+  slugs: ProjectRouteParams,
+) => {
   const res = await fetchApi(`/api/tasks/${taskId}`, {
     method: "PUT",
     body: JSON.stringify(data),
@@ -13,8 +17,7 @@ export const updateTask = async (taskId: string, data: UpdateTaskDto) => {
 
   if (res.isSuccess) {
     revalidatePath(
-      "/app/[universitySlug]/[facultySlug]/projects/[projectSlug]",
-      "layout",
+      `/app/${slugs.universitySlug}/${slugs.facultySlug}/projects/${slugs.projectSlug}`,
     );
   }
 
