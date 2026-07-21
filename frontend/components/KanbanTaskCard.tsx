@@ -52,15 +52,17 @@ const KanbanTaskCard = ({
       index={idx}
       isDragDisabled={isProfessor}
     >
-      {(provided) => (
+      {(provided, snapshot) => (
         <Card
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           style={provided.draggableProps.style as React.CSSProperties}
-          className="mb-2 shadow-sm border border-border/60"
+          className={`mb-2 shadow-sm border border-border/60 select-none touch-none ${
+            snapshot.isDragging ? "opacity-80 scale-102 shadow-lg z-50" : ""
+          }`}
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <CardTitle className="text-sm font-semibold truncate max-w-[70%]">
               {colTask.title}
             </CardTitle>
@@ -68,14 +70,20 @@ const KanbanTaskCard = ({
               <Button
                 variant={"outline"}
                 size={"icon-xs"}
-                onClick={() => setShowUpdateTaskCard(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowUpdateTaskCard(true);
+                }}
               >
                 <Edit className="w-3.5 h-3.5 text-primary/70 cursor-pointer" />
               </Button>
               <Button
                 variant={"destructive"}
                 size={"icon-xs"}
-                onClick={() => removeTask(colTask.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeTask(colTask.id);
+                }}
               >
                 <X className="w-3.5 h-3.5" />
               </Button>

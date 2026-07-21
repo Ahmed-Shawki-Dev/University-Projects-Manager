@@ -24,10 +24,12 @@ export default async function ExploreProjectsPage({
   const paramsRoutes = await params;
   const query = await searchParams;
 
-  const projects = await getAllProjectsExplorePage(
+  const projectsRes = await getAllProjectsExplorePage(
     paramsRoutes,
     query.projectType,
   );
+
+  const projects = projectsRes ?? [];
 
   const userClaims = await getCurrentUser();
 
@@ -63,7 +65,7 @@ export default async function ExploreProjectsPage({
         <div className="text-sm text-muted-foreground">
           Showing{" "}
           <span className="font-semibold text-foreground">
-            {projects.data.length}
+            {projects.data?.length}
           </span>{" "}
           projects
         </div>
@@ -86,7 +88,7 @@ export default async function ExploreProjectsPage({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.data.map((p) => (
+          {projects?.data?.map((p) => (
             <ExploreProjectCard key={p.id} project={p} params={paramsRoutes} />
           ))}
         </div>

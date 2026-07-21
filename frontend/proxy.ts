@@ -10,6 +10,15 @@ import {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.includes("webpack-hmr") ||
+    pathname.startsWith("/favicon.ico")
+  ) {
+    return NextResponse.next();
+  }
+
   const token = getToken(request);
   const { universitySlug, facultySlug } = getRouteSlugs(pathname);
 
@@ -62,5 +71,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/app/:path*"],
+  matcher: ["/((?!_next/static|_next/image|_next/webpack-hmr|favicon.ico).*)"],
 };
