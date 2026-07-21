@@ -23,7 +23,7 @@ const ProjectPage = async ({
   ]);
 
   return (
-    <div className="flex flex-col h-full container mx-auto px-2 py-2 space-y-2">
+    <div className="w-full flex flex-col h-full container mx-auto px-2 py-2 space-y-2">
       <div className="flex items-center justify-between border-b pb-2 shrink-0">
         <div>
           <h1 className="text-lg font-bold tracking-tight uppercase">

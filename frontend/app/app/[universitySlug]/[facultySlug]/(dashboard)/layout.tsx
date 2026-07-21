@@ -27,9 +27,7 @@ export default async function FacultyLayout({
       <AppSidebar projects={projects} userClaims={userClaims ?? undefined} />
       <main className="flex flex-1 flex-col min-h-screen overflow-hidden">
         <AppHeader />
-        <div className="flex-1 p-6 ">
-          {projects.length == 0 ? <EmptyProjects /> : children}
-        </div>
+        {projects.length == 0 ? <EmptyProjects /> : children}
       </main>
     </SidebarProvider>
   );

@@ -9,7 +9,7 @@ import {
   TaskStatusEnum,
   TeamMemberDto,
 } from "@/types/schema";
-import { Droppable } from "@hello-pangea/dnd";
+import { useDroppable } from "@dnd-kit/core";
 import AddTaskCard from "./AddTaskCard";
 import KanbanTaskCard from "./KanbanTaskCard";
 
@@ -29,10 +29,15 @@ export default function KanbanColumn({
   teamMembers,
 }: IProps) {
   const styles = statusStyles[col.id as TaskStatusEnum];
+
+  const { setNodeRef } = useDroppable({
+    id: col.id.toString(),
+  });
+
   return (
     <Card
       className={cn(
-        "w-70 sm:w-80 shrink-0 h-full flex flex-col bg-background border snap-center",
+        "w-70 sm:w-80 shrink-0 h-full flex flex-col bg-background border",
         styles.border,
       )}
     >
@@ -51,29 +56,23 @@ export default function KanbanColumn({
           )}
         </CardTitle>
       </CardHeader>
-      <Droppable droppableId={col.id.toString()}>
-        {(provided) => (
-          <CardContent
-            className={cn("flex-1 space-y-3 p-4 min-h-0")}
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            {colTasks.map((colTask, idx) => {
-              return (
-                <KanbanTaskCard
-                  colTask={colTask}
-                  idx={idx}
-                  key={colTask.id}
-                  milestones={milestones}
-                  isProfessor={isProfessor}
-                  teamMembers={teamMembers}
-                />
-              );
-            })}
-            {provided.placeholder}
-          </CardContent>
+
+      <CardContent
+        ref={setNodeRef}
+        className={cn(
+          "flex-1 space-y-3 p-4 overflow-y-auto overflow-x-hidden min-h-0",
         )}
-      </Droppable>
+      >
+        {colTasks.map((colTask) => (
+          <KanbanTaskCard
+            colTask={colTask}
+            key={colTask.id}
+            milestones={milestones}
+            isProfessor={isProfessor}
+            teamMembers={teamMembers}
+          />
+        ))}
+      </CardContent>
     </Card>
   );
 }

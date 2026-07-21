@@ -2,7 +2,6 @@ import { decodeJwt } from "jose";
 import { NextResponse, type NextRequest } from "next/server";
 import {
   getRouteSlugs,
-  getToken,
   isAuthRoute,
   isProtectedRoute,
   isTokenInvalidOrExpired,
@@ -10,16 +9,8 @@ import {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.includes("webpack-hmr") ||
-    pathname.startsWith("/favicon.ico")
-  ) {
-    return NextResponse.next();
-  }
-
-  const token = getToken(request);
+  const tokenCookie = request.cookies.get("token");
+  const token = tokenCookie?.value;
   const { universitySlug, facultySlug } = getRouteSlugs(pathname);
 
   const isTokenInvalid = token ? await isTokenInvalidOrExpired(token) : true;
@@ -51,7 +42,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const payload = decodeJwt(token!);
+  const payload = decodeJwt(token ?? "");
   const tokenUni = String(payload.universitySlug).toLowerCase();
   const tokenFac = String(payload.facultySlug).toLowerCase();
 
@@ -71,5 +62,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|_next/webpack-hmr|favicon.ico).*)"],
+  matcher: ["/app/:path*"],
 };
