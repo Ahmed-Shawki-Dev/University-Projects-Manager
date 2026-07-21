@@ -131,7 +131,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
             .HasOne(ts => ts.Student)
             .WithMany(t => t.TaskStudents)
             .HasForeignKey(ts => ts.StudentId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

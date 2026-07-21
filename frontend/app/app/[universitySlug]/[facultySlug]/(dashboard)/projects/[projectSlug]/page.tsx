@@ -36,7 +36,7 @@ const ProjectPage = async ({
         </div>
       </div>
 
-      <div className="w-full h-fit max-h-[calc(100vh-180px)] min-h-0">
+      <div className="w-full h-[calc(100vh-200px)]">
         <KanbanBoard
           columns={boardRes?.data?.columns ?? []}
           columnsOrder={boardRes?.data?.columnsOrder ?? []}

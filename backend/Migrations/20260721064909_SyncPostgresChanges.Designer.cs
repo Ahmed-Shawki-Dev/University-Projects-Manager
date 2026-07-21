@@ -12,8 +12,8 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260711071448_Initial_AcademicContext")]
-    partial class Initial_AcademicContext
+    [Migration("20260721064909_SyncPostgresChanges")]
+    partial class SyncPostgresChanges
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -165,6 +165,9 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<Guid>("FacultyId")
                         .HasColumnType("uuid");
 
@@ -174,6 +177,9 @@ namespace backend.Migrations
                     b.Property<string>("Semester")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -251,6 +257,27 @@ namespace backend.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("backend.Models.Doctor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AcademicRank")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Doctors");
+                });
+
             modelBuilder.Entity("backend.Models.Faculty", b =>
                 {
                     b.Property<Guid>("Id")
@@ -258,7 +285,7 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -272,7 +299,7 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -289,13 +316,13 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("DueDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<decimal>("MaxGrade")
                         .HasColumnType("decimal(5,2)");
@@ -304,14 +331,14 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -326,14 +353,14 @@ namespace backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AcademicContextId")
+                    b.Property<Guid?>("AcademicContextId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("Deadline")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -356,7 +383,7 @@ namespace backend.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -368,6 +395,21 @@ namespace backend.Migrations
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("backend.Models.ProjectDoctor", b =>
+                {
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("DoctorId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ProjectId", "DoctorId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("ProjectDoctors");
+                });
+
             modelBuilder.Entity("backend.Models.Student", b =>
                 {
                     b.Property<Guid>("Id")
@@ -375,7 +417,7 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("FacultyId")
                         .HasColumnType("uuid");
@@ -385,7 +427,7 @@ namespace backend.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -443,7 +485,7 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -462,7 +504,7 @@ namespace backend.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -473,6 +515,21 @@ namespace backend.Migrations
                     b.ToTable("Tasks");
                 });
 
+            modelBuilder.Entity("backend.Models.TaskStudent", b =>
+                {
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("TaskId", "StudentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("TaskStudents");
+                });
+
             modelBuilder.Entity("backend.Models.Team", b =>
                 {
                     b.Property<Guid>("Id")
@@ -480,14 +537,21 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("InviteCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("LeaderId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("MaxStudents")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -497,7 +561,7 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -514,7 +578,7 @@ namespace backend.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -525,7 +589,7 @@ namespace backend.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -597,6 +661,17 @@ namespace backend.Migrations
                     b.Navigation("Faculty");
                 });
 
+            modelBuilder.Entity("backend.Models.Doctor", b =>
+                {
+                    b.HasOne("backend.Models.AppUser", "User")
+                        .WithOne("Doctor")
+                        .HasForeignKey("backend.Models.Doctor", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("backend.Models.Faculty", b =>
                 {
                     b.HasOne("backend.Models.University", "University")
@@ -623,9 +698,7 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Models.AcademicContext", "AcademicContext")
                         .WithMany("Projects")
-                        .HasForeignKey("AcademicContextId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AcademicContextId");
 
                     b.HasOne("backend.Models.Faculty", "Faculty")
                         .WithMany("Projects")
@@ -636,6 +709,25 @@ namespace backend.Migrations
                     b.Navigation("AcademicContext");
 
                     b.Navigation("Faculty");
+                });
+
+            modelBuilder.Entity("backend.Models.ProjectDoctor", b =>
+                {
+                    b.HasOne("backend.Models.Doctor", "Doctor")
+                        .WithMany("ProjectDoctors")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Project", "Project")
+                        .WithMany("ProjectDoctors")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("backend.Models.Student", b =>
@@ -713,6 +805,25 @@ namespace backend.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("backend.Models.TaskStudent", b =>
+                {
+                    b.HasOne("backend.Models.Student", "Student")
+                        .WithMany("TaskStudents")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Task", "Task")
+                        .WithMany("TaskStudents")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Task");
+                });
+
             modelBuilder.Entity("backend.Models.Team", b =>
                 {
                     b.HasOne("backend.Models.Project", "Project")
@@ -731,7 +842,14 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.AppUser", b =>
                 {
+                    b.Navigation("Doctor");
+
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("backend.Models.Doctor", b =>
+                {
+                    b.Navigation("ProjectDoctors");
                 });
 
             modelBuilder.Entity("backend.Models.Faculty", b =>
@@ -754,6 +872,8 @@ namespace backend.Migrations
                 {
                     b.Navigation("Milestones");
 
+                    b.Navigation("ProjectDoctors");
+
                     b.Navigation("Tasks");
 
                     b.Navigation("Team");
@@ -764,6 +884,13 @@ namespace backend.Migrations
                     b.Navigation("StudentGrades");
 
                     b.Navigation("StudentTeams");
+
+                    b.Navigation("TaskStudents");
+                });
+
+            modelBuilder.Entity("backend.Models.Task", b =>
+                {
+                    b.Navigation("TaskStudents");
                 });
 
             modelBuilder.Entity("backend.Models.Team", b =>

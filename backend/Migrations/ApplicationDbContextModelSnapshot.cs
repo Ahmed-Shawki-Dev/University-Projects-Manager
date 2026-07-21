@@ -807,7 +807,7 @@ namespace backend.Migrations
                     b.HasOne("backend.Models.Student", "Student")
                         .WithMany("TaskStudents")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("backend.Models.Task", "Task")

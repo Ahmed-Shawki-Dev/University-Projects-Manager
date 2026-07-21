@@ -31,7 +31,10 @@ export default function KanbanColumn({
   const styles = statusStyles[col.id as TaskStatusEnum];
   return (
     <Card
-      className={`flex-1 min-w-67.5 max-w-87.5 h-full flex flex-col bg-background border shrink-0 snap-center ${styles.border}`}
+      className={cn(
+        "w-70 sm:w-80 shrink-0 h-full flex flex-col bg-background border snap-center",
+        styles.border,
+      )}
     >
       <CardHeader className="shrink-0">
         <CardTitle className="flex flex-col gap-2">
@@ -51,7 +54,7 @@ export default function KanbanColumn({
       <Droppable droppableId={col.id.toString()}>
         {(provided) => (
           <CardContent
-            className={cn("flex-1 overflow-y-auto space-y-3 p-4 min-h-0")}
+            className={cn("flex-1 space-y-3 p-4 min-h-0")}
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
