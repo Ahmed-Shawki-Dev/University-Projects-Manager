@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useFacultyStore } from "@/stores/facultyStore";
@@ -31,6 +32,7 @@ export function AppSidebar({
   isProfessor = false,
   userClaims,
 }: IProps) {
+  const { setOpenMobile, isMobile } = useSidebar();
   const params = useParams();
   const uni = params.universitySlug;
   const fac = params.facultySlug;
@@ -83,6 +85,9 @@ export function AppSidebar({
                           "cursor-pointer",
                           pro === project.slug && "bg-sidebar-border p-2",
                         )}
+                        onClick={() => {
+                          if (isMobile) setOpenMobile(false);
+                        }}
                       >
                         <span>{project.name}</span>
                       </SidebarMenuButton>
