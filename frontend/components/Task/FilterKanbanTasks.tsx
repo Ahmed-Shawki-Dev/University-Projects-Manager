@@ -32,18 +32,15 @@ export default function FilterKanbanTasks({ milestones, teamMembers }: IProps) {
   const pathname = usePathname();
   const router = useRouter();
 
-  // 1. قراءة الفلاتر الحالية من الـ URL مباشرة
   const currentMilestone = searchParams.get("milestoneId") ?? "all";
   const currentStudent = searchParams.get("studentId") ?? "all";
   const isOnlyMyTasks = searchParams.get("onlyMyTasks") === "true";
 
-  // 2. حساب عدد الفلاتر الشغالة حالياً
   const activeFiltersCount =
     (currentMilestone !== "all" ? 1 : 0) +
     (currentStudent !== "all" ? 1 : 0) +
     (isOnlyMyTasks ? 1 : 0);
 
-  // 3. دالة تحديث الـ URL
   const updateFilter = (name: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
 
