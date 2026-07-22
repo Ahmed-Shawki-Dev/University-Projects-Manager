@@ -28,7 +28,7 @@ export default function KanbanColumn({
   isProfessor,
   teamMembers,
 }: IProps) {
-  const styles = statusStyles[col.id as TaskStatusEnum];
+  const styles = statusStyles[col?.id as TaskStatusEnum];
 
   const { setNodeRef } = useDroppable({
     id: col.id.toString(),

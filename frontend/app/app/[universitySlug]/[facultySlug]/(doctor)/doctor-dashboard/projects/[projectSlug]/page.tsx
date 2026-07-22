@@ -29,7 +29,7 @@ const DoctorProjectPage = async ({
         </TabsList>
         <TabsContent value="kanban" className="mt-4">
           <KanbanBoard
-            columns={boardRes?.data?.columns ?? []}
+            columns={boardRes?.data?.columns ?? {}}
             columnsOrder={boardRes?.data?.columnsOrder ?? []}
             tasks={boardRes?.data?.tasks ?? []}
             milestones={milestonesRes?.data ?? []}

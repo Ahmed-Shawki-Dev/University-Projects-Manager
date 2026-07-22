@@ -27,7 +27,7 @@ interface IProps {
   tasks: TaskDto[];
   milestones?: MilestoneWithTasksDto[];
   isProfessor?: boolean;
-  teamMembers: TeamMemberDto[];
+  teamMembers?: TeamMemberDto[];
 }
 
 const KanbanBoard = ({
@@ -109,7 +109,7 @@ const KanbanBoard = ({
               key={col}
               milestones={milestones}
               isProfessor={isProfessor}
-              teamMembers={teamMembers}
+              teamMembers={teamMembers ?? []}
             />
           );
         })}
@@ -122,7 +122,7 @@ const KanbanBoard = ({
               colTask={activeTask}
               milestones={milestones}
               isProfessor={isProfessor}
-              teamMembers={teamMembers}
+              teamMembers={teamMembers ?? []}
             />
           </div>
         ) : null}

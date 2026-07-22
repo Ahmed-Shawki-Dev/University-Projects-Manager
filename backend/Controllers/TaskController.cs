@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using backend.Data;
 using backend.DTOs;
 using backend.Mappers;
@@ -18,7 +19,10 @@ namespace backend.Controllers
         public async Task<IActionResult> GetProjectTasks(
             [FromRoute] string universitySlug,
             [FromRoute] string facultySlug,
-            [FromRoute] string projectSlug
+            [FromRoute] string projectSlug,
+            [FromQuery] Guid? milestoneId,
+            [FromQuery] Guid? studentId,
+            [FromQuery] bool? onlyMyTasks
         )
         {
             if (!SecurityHelper.IsAuthorizedForTenant(User, universitySlug, facultySlug))
@@ -38,15 +42,38 @@ namespace backend.Controllers
                 );
             }
 
-            var tasksEntities = await context
+            var tasksQuery = context
                 .Tasks.AsNoTracking()
                 .Include(t => t.TaskStudents)
                     .ThenInclude(ts => ts.Student)
                         .ThenInclude(s => s.User)
                 .Where(t => t.Project.Slug == projectSlug && t.Project.Faculty.Slug == facultySlug)
-                .ToListAsync();
+                .AsQueryable();
 
-            var tasks = tasksEntities.Select(t => t.ToDto()).ToList();
+            // ** Filters
+            if (milestoneId.HasValue)
+            {
+                tasksQuery = tasksQuery.Where(t => t.MilestoneId == milestoneId);
+            }
+
+            if (onlyMyTasks == true)
+            {
+                var currentStudentIdClaim = User.FindFirstValue("studentId");
+                var currentStudentId = Guid.Parse(currentStudentIdClaim!);
+                tasksQuery = tasksQuery.Where(t =>
+                    t.TaskStudents.Any(ts => ts.StudentId == currentStudentId)
+                );
+            }
+            else if (studentId.HasValue)
+            {
+                tasksQuery = tasksQuery.Where(t =>
+                    t.TaskStudents.Any(ts => ts.StudentId == studentId)
+                );
+            }
+
+            var tasksModel = await tasksQuery.ToListAsync();
+
+            var tasks = tasksModel.Select(t => t.ToDto()).ToList();
 
             var columns = new Dictionary<TaskStatusEnum, KanbanColumnDto>
             {

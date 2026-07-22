@@ -269,3 +269,9 @@ export interface SubmitStudentGradeDto {
   studentId: string;
   grade: number;
 }
+
+export interface KanbanTasksFilters {
+  milestoneId: string;
+  studentId: string;
+  onlyMyTasks: string;
+}
