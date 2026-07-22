@@ -1,4 +1,5 @@
 "use client";
+
 import { updateTask } from "@/action/task/updateTask";
 import {
   Command,
@@ -16,7 +17,7 @@ import {
 } from "@/types/schema";
 import { addTaskSchema, UpdateTaskType } from "@/validation/tasks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDownIcon } from "lucide-react";
+import { Check, Flag, Users } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -89,117 +90,117 @@ const UpdateTaskCard = ({
   };
 
   return (
-    <Card className="w-full max-w-md p-6 shadow-none animate-in fade-in-50 zoom-in-95 duration-200">
-      <form
-        onSubmit={form.handleSubmit(onSubmitHandler)}
-        className="grid gap-4"
-      >
+    <Card className="w-full max-w-md p-3 shadow-md border border-primary/40 animate-in fade-in-50 zoom-in-95 duration-200">
+      <form onSubmit={form.handleSubmit(onSubmitHandler)} className="space-y-3">
+        {/* Title Input */}
         <Controller
           name="title"
           control={form.control}
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid} className="grid gap-1.5">
+            <Field data-invalid={fieldState.invalid} className="grid gap-1">
               <Input
                 {...field}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
                 placeholder="Title"
                 autoComplete="off"
+                className="h-8 text-sm placeholder:text-muted-foreground focus-visible:ring-1"
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
 
+        {/* Description Input */}
         <Controller
           name="description"
           control={form.control}
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid} className={`gap-1.5`}>
+            <Field data-invalid={fieldState.invalid} className="grid gap-1">
               <Input
                 {...field}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
                 placeholder="Description (Optional)"
                 autoComplete="off"
+                className="h-8 text-xs bg-muted/20"
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
 
-        <Controller
-          name="milestoneId"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid} className={`gap-1.5`}>
-              <Select
-                name={field.name}
-                value={field.value ?? ""}
-                onValueChange={field.onChange}
-              >
-                <SelectTrigger aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder="Select Milestone" />
-                </SelectTrigger>
-                <SelectContent position="item-aligned">
-                  <SelectItem value="">No Milestone</SelectItem>
-                  <SelectSeparator />
-                  {milestones.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+        {/* Options Toolbar */}
+        <div className="flex items-center gap-1.5 pt-1 border-t border-border/40">
+          {/* Milestone Select */}
+          <Controller
+            name="milestoneId"
+            control={form.control}
+            render={({ field, fieldState }) => {
+              const selectedMilestone = milestones.find(
+                (m) => m.id === field.value,
+              );
 
-        <Controller
-          name="studentIds"
-          control={form.control}
-          render={({ field, fieldState }) => {
-            const currentSelectedIds = field.value || [];
-            return (
-              <Field
-                data-invalid={fieldState.invalid}
-                className={`grid gap-1.5`}
-              >
+              return (
+                <Select
+                  name={field.name}
+                  value={field.value ?? ""}
+                  onValueChange={field.onChange}
+                >
+                  <SelectTrigger
+                    aria-invalid={fieldState.invalid}
+                    className="h-8 w-15 p-0 shrink-0 flex items-center justify-center border-dashed relative"
+                  >
+                    <Flag
+                      className={cn(
+                        "w-4 h-4 text-muted-foreground",
+                        selectedMilestone && "text-primary fill-primary/20",
+                      )}
+                    />
+                    <span className="sr-only">
+                      <SelectValue />
+                    </span>
+                  </SelectTrigger>
+                  <SelectContent align="start">
+                    <SelectItem value="">No Milestone</SelectItem>
+                    <SelectSeparator />
+                    {milestones.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        {m.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            }}
+          />
+
+          {/* Assignees Popover */}
+          <Controller
+            name="studentIds"
+            control={form.control}
+            render={({ field }) => {
+              const currentSelectedIds = field.value || [];
+
+              return (
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
+                      type="button"
                       variant="outline"
-                      className="w-full justify-between text-left font-normal"
+                      size="icon-xs"
+                      className="h-8 w-8 p-0 border-dashed shrink-0"
                     >
-                      {currentSelectedIds.length === 0 ? (
-                        <span className="opacity-60">Assign Students...</span>
-                      ) : (
-                        <div className="flex flex-wrap gap-1 max-w-full overflow-hidden">
-                          {currentSelectedIds.map((id) => {
-                            const member = teamMembers?.find(
-                              (m) =>
-                                m.id.toString().toLowerCase() ===
-                                id.toString().toLowerCase(),
-                            );
-                            return (
-                              <span
-                                key={id}
-                                className="bg-secondary text-secondary-foreground text-[11px] px-2 py-0.5 rounded-sm border"
-                              >
-                                {member?.name || "Unknown"}
-                              </span>
-                            );
-                          })}
-                        </div>
-                      )}
-                      <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      <Users className="w-4 h-4 text-muted-foreground" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-80 p-0" align="start">
+                  <PopoverContent className="w-64 p-0" align="start">
                     <Command>
-                      <CommandInput placeholder="Search team members..." />
-                      <CommandGroup className="max-h-60 overflow-y-auto">
+                      <CommandInput
+                        placeholder="Search team members..."
+                        className="h-8 text-xs"
+                      />
+                      <CommandGroup className="max-h-48 overflow-y-auto">
                         {teamMembers?.map((member) => {
                           const isSelected = currentSelectedIds.some(
                             (id) =>
@@ -220,19 +221,18 @@ const UpdateTaskCard = ({
                                   : [...currentSelectedIds, member.id];
                                 field.onChange(nextIds);
                               }}
+                              className="text-xs"
                             >
                               <div className="flex items-center gap-2 w-full">
                                 <Check
                                   className={cn(
-                                    "h-4 w-4 shrink-0",
+                                    "h-3.5 w-3.5 shrink-0",
                                     isSelected ? "opacity-100" : "opacity-0",
                                   )}
                                 />
-
                                 <span className="flex shrink-0 items-center justify-center w-5 h-5 rounded-full bg-secondary text-[9px] font-bold border">
                                   {getAvatarIcon(member.name)}
                                 </span>
-
                                 <span className="truncate">{member.name}</span>
                               </div>
                             </CommandItem>
@@ -242,21 +242,25 @@ const UpdateTaskCard = ({
                     </Command>
                   </PopoverContent>
                 </Popover>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            );
-          }}
-        />
+              );
+            }}
+          />
+        </div>
 
-        <div className="flex items-center gap-2">
-          <Button type="submit" className="flex-1">
-            Update Task
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs px-3 text-muted-foreground hover:text-foreground"
+            onClick={onClose}
+          >
+            Cancel
           </Button>
 
-          <Button type="button" variant="outline" onClick={onClose}>
-            Cancel
+          <Button type="submit" size="sm" className="h-7 text-xs px-3">
+            Update Task
           </Button>
         </div>
       </form>

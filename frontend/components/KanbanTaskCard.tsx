@@ -1,17 +1,13 @@
+"use client";
 import { removeTask } from "@/action/task/removeTask";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { getAvatarIcon } from "@/lib/utils";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { MilestoneWithTasksDto, TaskDto, TeamMemberDto } from "@/types/schema";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { Edit, X } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 import { useState } from "react";
+import TaskDetailsDrawer from "./Task/TaskDetailsDrawer";
 import UpdateTaskCard from "./UpdateTaskCard";
 import { Button } from "./ui/button";
 
@@ -28,6 +24,7 @@ const KanbanTaskCard = ({
   isProfessor,
   teamMembers,
 }: IProps) => {
+  const [showTaskDetailsDrawer, setShowTaskDetailsDrawer] = useState(false);
   const [showUpdateTaskCard, setShowUpdateTaskCard] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -55,70 +52,56 @@ const KanbanTaskCard = ({
   }
 
   return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      className={`mb-2 shadow-sm border border-border/60 select-none touch-none ${
-        isDragging ? "opacity-50 scale-105 shadow-xl z-50" : ""
-      }`}
-    >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-sm font-semibold truncate max-w-[70%]">
-          {colTask.title}
-        </CardTitle>
-        <div className="space-x-1 flex shrink-0">
-          <Button
-            variant={"outline"}
-            size={"icon-xs"}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowUpdateTaskCard(true);
-            }}
-          >
-            <Edit className="w-3.5 h-3.5 text-primary/70 cursor-pointer" />
-          </Button>
-          <Button
-            variant={"destructive"}
-            size={"icon-xs"}
-            onClick={(e) => {
-              e.stopPropagation();
-              removeTask(colTask.id);
-            }}
-          >
-            <X className="w-3.5 h-3.5" />
-          </Button>
-        </div>
-      </CardHeader>
-
-      <CardContent className="px-4 py-0">
-        <p className="text-xs opacity-60 mb-2 line-clamp-2">
-          {colTask.description || "No description provided."}
-        </p>
-      </CardContent>
-
-      <CardFooter className="p-4 pt-0 flex flex-row items-center justify-between border-t border-border/40 mt-2">
-        <div className="text-[11px] opacity-60 truncate max-w-[60%] mt-2">
-          <span className="font-medium">Milestone:</span>{" "}
-          {milestone?.title ?? "Without Milestone"}
-        </div>
-
-        {colTask.assignedStudents && colTask.assignedStudents.length > 0 && (
-          <div className="flex -space-x-1.5 items-center mt-2 overflow-hidden">
-            {colTask.assignedStudents.map((student) => (
-              <span
-                key={student.id}
-                className="flex shrink-0 items-center justify-center w-5 h-5 rounded-full bg-secondary text-[9px] font-bold border border-background text-secondary-foreground ring-1 ring-border shadow-sm transition-transform hover:scale-105 hover:z-10"
-                title={student.name || "Assigned Student"}
-              >
-                {getAvatarIcon(student.name || "AS")}
-              </span>
-            ))}
-          </div>
+    <>
+      <Card
+        ref={setNodeRef}
+        style={style}
+        {...listeners}
+        {...attributes}
+        onClick={() => setShowTaskDetailsDrawer(true)}
+        className={cn(
+          `mb-2 shadow-sm border border-border/60 select-none touch-none cursor-pointer hover:border-primary/50 transition-colors group p-3`,
+          isDragging && "opacity-50 scale-105 shadow-xl z-50",
         )}
-      </CardFooter>
-    </Card>
+      >
+        <CardHeader className="p-0 flex flex-row items-center justify-between space-y-0">
+          <CardTitle className="text-sm font-medium truncate max-w-[75%]">
+            {colTask.title}
+          </CardTitle>
+          <div className="space-x-1 flex shrink-0 group-hover opacity-0 group-hover:opacity-80 transition-opacity">
+            <Button
+              variant={"ghost"}
+              size={"icon-xs"}
+              className="h-6 w-6"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowUpdateTaskCard(true);
+              }}
+            >
+              <Edit className="w-3.5 h-3.5 text-muted-foreground hover:text-primary transition-colors" />
+            </Button>
+            <Button
+              variant={"ghost"}
+              size={"icon-xs"}
+              className="h-6 w-6 hover:bg-destructive/10"
+              onClick={(e) => {
+                e.stopPropagation();
+                removeTask(colTask.id);
+              }}
+            >
+              <Trash className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive transition-colors" />
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
+
+      <TaskDetailsDrawer
+        taskDetails={colTask}
+        milestoneTitle={milestone?.title ?? ""}
+        open={showTaskDetailsDrawer}
+        onClose={() => setShowTaskDetailsDrawer(false)}
+      />
+    </>
   );
 };
 

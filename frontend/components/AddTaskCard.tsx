@@ -1,4 +1,5 @@
 "use client";
+
 import { createTask } from "@/action/task/createTask";
 import { cn, getAvatarIcon } from "@/lib/utils";
 import {
@@ -9,11 +10,12 @@ import {
 } from "@/types/schema";
 import { addTaskSchema } from "@/validation/tasks";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDownIcon } from "lucide-react";
+import { Check, Flag, Plus, Users } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
+
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Command, CommandGroup, CommandInput, CommandItem } from "./ui/command";
@@ -29,15 +31,15 @@ import {
   SelectValue,
 } from "./ui/select";
 
-const AddTaskCard = ({
-  milestones,
-  teamMembers,
-}: {
+interface AddTaskCardProps {
   milestones: MilestoneWithTasksDto[];
   teamMembers: TeamMemberDto[];
-}) => {
+}
+
+const AddTaskCard = ({ milestones, teamMembers }: AddTaskCardProps) => {
   const { universitySlug, facultySlug, projectSlug } = useParams();
   const [showCard, setShowCard] = useState(false);
+
   const form = useForm<z.infer<typeof addTaskSchema>>({
     resolver: zodResolver(addTaskSchema),
     defaultValues: {
@@ -60,11 +62,16 @@ const AddTaskCard = ({
 
       const res = await createTask(
         payload as CreateTaskDto,
-        { universitySlug, facultySlug, projectSlug } as ProjectRouteParams,
+        {
+          universitySlug,
+          facultySlug,
+          projectSlug,
+        } as ProjectRouteParams,
       );
 
       if (res.isSuccess) {
         form.reset();
+        setShowCard(false);
       }
     } catch {
       form.reset();
@@ -73,182 +80,225 @@ const AddTaskCard = ({
 
   return (
     <Card
-      className={`w-full max-w-md p-0  ${showCard && "p-6"} shadow-none transition-all duration-300`}
+      className={cn(
+        "w-full max-w-md p-0 shadow-sm border border-border/60 transition-all duration-200",
+        showCard && "p-4 border-primary/40 shadow-md",
+      )}
     >
       <form
         onSubmit={form.handleSubmit(onSubmitHandler)}
-        className="grid gap-4"
+        className="space-y-3"
         onFocus={() => setShowCard(true)}
         onBlur={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-            if (form.getValues("title").trim() === "") {
-              setShowCard(false);
-              form.reset();
+          const formElement = e.currentTarget;
+
+          setTimeout(() => {
+            const activeEl = document.activeElement;
+
+            const isInsideForm = formElement?.contains(activeEl);
+
+            const isInsidePortal =
+              activeEl?.closest &&
+              (activeEl.closest("[data-radix-popper-content-wrapper]") ||
+                activeEl.closest("[role='dialog']") ||
+                activeEl.closest("[role='listbox']"));
+
+            if (!isInsideForm && !isInsidePortal) {
+              if (form.getValues("title").trim() === "") {
+                setShowCard(false);
+                form.reset();
+              }
             }
+          }, 0);
+        }}
+        onMouseDown={(e) => {
+          if (
+            e.target === e.currentTarget ||
+            (e.target as HTMLElement).tagName === "DIV"
+          ) {
+            e.preventDefault();
           }
         }}
       >
+        {/* Title Input */}
         <Controller
           name="title"
           control={form.control}
           render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid} className="grid gap-1.5">
+            <Field data-invalid={fieldState.invalid} className="grid gap-1">
               <Input
                 {...field}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
-                placeholder="Title"
+                placeholder={showCard ? "Title" : "Add A Task"}
                 autoComplete="off"
-                className={`${!showCard && "border-none"}`}
+                className={cn(
+                  "h-8 text-sm placeholder:text-muted-foreground focus-visible:ring-1",
+                  !showCard && "border-none shadow-none px-2",
+                )}
               />
               {fieldState.invalid && (
                 <FieldError
                   errors={[fieldState.error]}
-                  className={`${!showCard && "hidden"}`}
+                  className={cn(!showCard && "hidden")}
                 />
               )}
             </Field>
           )}
         />
 
-        <Controller
-          name="description"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field
-              data-invalid={fieldState.invalid}
-              className={`hidden gap-1.5 ${showCard && "grid"}`}
-            >
-              <Input
-                {...field}
-                id={field.name}
-                aria-invalid={fieldState.invalid}
-                placeholder="Description (Optional)"
-                autoComplete="off"
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+        {/* Expanded Fields */}
+        {showCard && (
+          <>
+            {/* Description Input */}
+            <Controller
+              name="description"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid} className="grid gap-1">
+                  <Input
+                    {...field}
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Description (Optional)"
+                    autoComplete="off"
+                    className="h-8 text-xs bg-muted/20"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
 
-        <Controller
-          name="milestoneId"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field
-              data-invalid={fieldState.invalid}
-              className={`hidden gap-1.5 ${showCard && "grid"}`}
-            >
-              <Select
-                name={field.name}
-                value={field.value ?? ""}
-                onValueChange={field.onChange}
-              >
-                <SelectTrigger aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder="Select Milestone" />
-                </SelectTrigger>
-                <SelectContent position="item-aligned">
-                  <SelectItem value="">No Milestone</SelectItem>
-                  <SelectSeparator />
-                  {milestones.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+            {/* Bottom Actions Toolbar */}
+            <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/40">
+              <div className="flex items-center gap-1.5">
+                {/* Milestone Select */}
+                <Controller
+                  name="milestoneId"
+                  control={form.control}
+                  render={({ field, fieldState }) => {
+                    const selectedMilestone = milestones.find(
+                      (m) => m.id === field.value,
+                    );
 
-        <Controller
-          name="studentIds"
-          control={form.control}
-          render={({ field, fieldState }) => {
-            const currentSelectedIds = field.value || [];
-            return (
-              <Field
-                data-invalid={fieldState.invalid}
-                className={`hidden gap-1.5 ${showCard && "grid"}`}
-              >
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-between text-left font-normal"
-                    >
-                      {currentSelectedIds.length === 0 ? (
-                        <span className="opacity-60">Assign Students...</span>
-                      ) : (
-                        <div className="flex flex-wrap gap-1 max-w-full overflow-hidden">
-                          {currentSelectedIds.map((id) => {
-                            const member = teamMembers.find((m) => m.id === id);
-                            return (
-                              <span
-                                key={id}
-                                className="bg-secondary text-secondary-foreground text-[11px] px-2 py-0.5 rounded-sm border"
-                              >
-                                {member?.name || "Unknown"}
-                              </span>
-                            );
-                          })}
-                        </div>
-                      )}
-                      <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80 p-0" align="start">
-                    <Command>
-                      <CommandInput placeholder="Search team members..." />
-                      <CommandGroup className="max-h-60 overflow-y-auto">
-                        {teamMembers?.map((member) => {
-                          const isSelected = currentSelectedIds.includes(
-                            member.id,
-                          );
-                          return (
-                            <CommandItem
-                              key={member.id}
-                              value={member.name}
-                              onSelect={() => {
-                                const nextIds = isSelected
-                                  ? currentSelectedIds.filter(
-                                      (id) => id !== member.id,
-                                    )
-                                  : [...currentSelectedIds, member.id];
-                                field.onChange(nextIds);
-                              }}
-                            >
-                              <div className="flex items-center gap-2 w-full">
-                                <Check
-                                  className={cn(
-                                    "h-4 w-4 shrink-0",
-                                    isSelected ? "opacity-100" : "opacity-0",
-                                  )}
-                                />
+                    return (
+                      <Select
+                        name={field.name}
+                        value={field.value ?? ""}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger
+                          aria-invalid={fieldState.invalid}
+                          className="h-8 w-15 p-0 shrink-0 flex items-center justify-center border-dashed relative"
+                        >
+                          <Flag
+                            className={cn(
+                              "w-4 h-4 text-muted-foreground",
+                              selectedMilestone &&
+                                "text-primary fill-primary/20",
+                            )}
+                          />
+                          <span className="sr-only">
+                            <SelectValue />
+                          </span>
+                        </SelectTrigger>
+                        <SelectContent align="start">
+                          <SelectItem value="">No Milestone</SelectItem>
+                          <SelectSeparator />
+                          {milestones.map((m) => (
+                            <SelectItem key={m.id} value={m.id}>
+                              {m.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    );
+                  }}
+                />
 
-                                <span className="flex shrink-0 items-center justify-center w-5 h-5 rounded-full bg-secondary text-[9px] font-bold border">
-                                  {getAvatarIcon(member.name)}
-                                </span>
+                {/* Assignees Popover */}
+                <Controller
+                  name="studentIds"
+                  control={form.control}
+                  render={({ field }) => {
+                    const currentSelectedIds = field.value || [];
 
-                                <span className="truncate">{member.name}</span>
-                              </div>
-                            </CommandItem>
-                          );
-                        })}
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            );
-          }}
-        />
+                    return (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon-xs"
+                            className="h-8 w-8 p-0 border-dashed"
+                          >
+                            <Users className="w-4 h-4 text-muted-foreground" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 p-0" align="start">
+                          <Command>
+                            <CommandInput
+                              placeholder="Search team members..."
+                              className="h-8 text-xs"
+                            />
+                            <CommandGroup className="max-h-48 overflow-y-auto">
+                              {teamMembers?.map((member) => {
+                                const isSelected = currentSelectedIds.includes(
+                                  member.id,
+                                );
+                                return (
+                                  <CommandItem
+                                    key={member.id}
+                                    value={member.name}
+                                    onSelect={() => {
+                                      const nextIds = isSelected
+                                        ? currentSelectedIds.filter(
+                                            (id) => id !== member.id,
+                                          )
+                                        : [...currentSelectedIds, member.id];
+                                      field.onChange(nextIds);
+                                    }}
+                                    className="text-xs"
+                                  >
+                                    <div className="flex items-center gap-2 w-full">
+                                      <Check
+                                        className={cn(
+                                          "h-3.5 w-3.5 shrink-0",
+                                          isSelected
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      <span className="flex shrink-0 items-center justify-center w-5 h-5 rounded-full bg-secondary text-[9px] font-bold border">
+                                        {getAvatarIcon(member.name)}
+                                      </span>
+                                      <span className="truncate">
+                                        {member.name}
+                                      </span>
+                                    </div>
+                                  </CommandItem>
+                                );
+                              })}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    );
+                  }}
+                />
+              </div>
 
-        <Button className={`hidden ${showCard && "grid"}`}>Create Task</Button>
+              {/* Form Controls */}
+              <div className="flex items-center justify-end gap-1">
+                <Button type="submit" size="icon-xs" className="h-8 w-8 p-0">
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
       </form>
     </Card>
   );
