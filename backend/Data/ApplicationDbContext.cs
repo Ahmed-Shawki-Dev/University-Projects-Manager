@@ -23,6 +23,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
     public DbSet<Doctor> Doctors { get; set; }
     public DbSet<ProjectDoctor> ProjectDoctors { get; set; }
     public DbSet<TaskStudent> TaskStudents { get; set; }
+    public DbSet<TaskComment> TaskComments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

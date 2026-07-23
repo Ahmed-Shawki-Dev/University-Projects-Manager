@@ -23,5 +23,8 @@ namespace backend.Models
 
         // Relation Between Student And There Tasks
         public List<TaskStudent> TaskStudents { get; set; } = new();
+
+        // Relation Between Task And There Comments
+        public List<TaskComment> TaskComments { get; set; } = new();
     }
 }
