@@ -275,3 +275,21 @@ export interface KanbanTasksFilters {
   studentId: string;
   onlyMyTasks: string;
 }
+
+// ** Task Comments
+export interface CommentAuthorDto {
+  id: string;
+  name: string;
+  role: "Student" | "Doctor" | "Unknown";
+}
+
+export interface TaskCommentDto {
+  id: string;
+  content: string;
+  createdAt: string;
+  author: CommentAuthorDto;
+}
+
+export interface CreateTaskCommentDto {
+  content: string;
+}
