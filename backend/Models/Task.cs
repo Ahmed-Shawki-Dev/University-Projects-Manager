@@ -26,5 +26,8 @@ namespace backend.Models
 
         // Relation Between Task And There Comments
         public List<TaskComment> TaskComments { get; set; } = new();
+
+        // Relation Between Tasks And Attachments
+        public List<TaskAttachment> TaskAttachments { get; set; } = new();
     }
 }
