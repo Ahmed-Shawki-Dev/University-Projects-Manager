@@ -44,6 +44,7 @@ next-env.d.ts
 **/obj/
 **/bin/
 **/.vs/
+**/wwwroot/
 
 **/appsettings.json
 **/appsettings.Development.json

@@ -108,6 +108,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// For File Upload
+app.UseStaticFiles();
+
 // Add Roles To Program
 using (var scope = app.Services.CreateScope())
 {
