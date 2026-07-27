@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
     "fancy-chicken-show.loca.lt",
     "*.trycloudflare.com",
   ],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "12mb",
+    },
+  },
 };
 
 export default nextConfig;

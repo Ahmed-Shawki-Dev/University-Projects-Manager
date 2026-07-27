@@ -293,3 +293,13 @@ export interface TaskCommentDto {
 export interface CreateTaskCommentDto {
   content: string;
 }
+
+// ** Task Attachment
+
+export interface TaskAttachmentDto {
+  id: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  uploaderName: string;
+}

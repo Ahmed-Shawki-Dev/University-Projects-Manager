@@ -9,7 +9,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, getAvatarIcon } from "@/lib/utils";
 import { statusStyles, TaskDto } from "@/types/schema";
-import { AlignLeft, Flag, User } from "lucide-react";
+import { AlignLeft, File, Flag, User } from "lucide-react";
+import TaskAttachmentsSection from "./TaskAttachmentsSection";
 import TaskCommentsSection from "./TaskCommentsSection";
 
 interface IProps {
@@ -110,6 +111,13 @@ export default function TaskDetailsDrawer({
                 {taskDetails.description ||
                   "No description provided for this task."}
               </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <File className="w-4 h-4 text-muted-foreground" />
+                <span>Attachments</span>
+              </div>
+              <TaskAttachmentsSection taskId={taskDetails.id} />
             </div>
           </TabsContent>
 
