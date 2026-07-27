@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, getAvatarIcon } from "@/lib/utils";
 import { statusStyles, TaskDto } from "@/types/schema";
 import { AlignLeft, File, Flag, User } from "lucide-react";
-import TaskAttachmentsSection from "./TaskAttachmentsSection";
+import TaskAttachmentList from "./TaskAttachmentList";
+import TaskAttachmentUploadForm from "./TaskAttachmentUploadForm";
 import TaskCommentsSection from "./TaskCommentsSection";
 
 interface IProps {
@@ -28,9 +29,9 @@ export default function TaskDetailsDrawer({
 }: IProps) {
   return (
     <Sheet open={open} onOpenChange={(val) => !val && onClose()}>
-      <SheetContent className="sm:max-w-xl w-full p-6 flex flex-col justify-between overflow-y-auto">
+      <SheetContent className="sm:max-w-xl w-full p-6 flex flex-col h-full overflow-hidden">
         {/* Header Section */}
-        <SheetHeader className="space-y-3 text-left">
+        <SheetHeader className="space-y-3 text-left shrink-0">
           <div className="flex items-center gap-2 flex-wrap">
             {/* Status Badge */}
             <Badge
@@ -60,19 +61,22 @@ export default function TaskDetailsDrawer({
           </SheetTitle>
         </SheetHeader>
 
-        <Separator />
+        <Separator className="my-3 shrink-0" />
 
         <Tabs
           defaultValue="details"
-          className="w-full flex-1 h-full  flex flex-col"
+          className="w-full flex-1 min-h-0 flex flex-col"
         >
-          <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsList className="grid w-full grid-cols-2 mb-4 shrink-0">
             <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="comments">Comments</TabsTrigger>
+            <TabsTrigger value="attachments">Attachments</TabsTrigger>
           </TabsList>
 
           {/* Tab 1: Details */}
-          <TabsContent value="details" className="space-y-6">
+          <TabsContent
+            value="details"
+            className="flex-1 min-h-0 overflow-y-auto space-y-6 pr-1"
+          >
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <User className="w-4 h-4" />
@@ -111,25 +115,24 @@ export default function TaskDetailsDrawer({
                 {taskDetails.description ||
                   "No description provided for this task."}
               </div>
+              <TaskCommentsSection taskId={taskDetails.id} />
             </div>
+          </TabsContent>
+
+          <TabsContent
+            value="attachments"
+            className="flex-1 min-h-0 overflow-y-auto space-y-4 pr-1"
+          >
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <File className="w-4 h-4 text-muted-foreground" />
                 <span>Attachments</span>
               </div>
-              <TaskAttachmentsSection taskId={taskDetails.id} />
+              <TaskAttachmentUploadForm taskId={taskDetails.id} />
+              <TaskAttachmentList taskId={taskDetails.id} />
             </div>
           </TabsContent>
-
-          <TabsContent value="comments" className="flex-1 flex flex-col">
-            <TaskCommentsSection taskId={taskDetails.id} />
-          </TabsContent>
         </Tabs>
-
-        {/* Footer info */}
-        <div className="pt-4 border-t border-border/40 text-xs text-muted-foreground flex justify-between items-center">
-          <span>Task ID: {taskDetails.id.slice(0, 8)}...</span>
-        </div>
       </SheetContent>
     </Sheet>
   );

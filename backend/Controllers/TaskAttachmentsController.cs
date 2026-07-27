@@ -92,5 +92,30 @@ namespace backend.Controllers
 
             return Success(attachmentsDtos, "File Uploaded Successfully");
         }
+
+        // ** Get All Task Attachments
+        [HttpGet]
+        public async Task<IActionResult> GetAllTaskAttachments([FromRoute] Guid taskId)
+        {
+            // **  Check If Task Exist
+            var task = await context.Tasks.FindAsync(taskId);
+            if (task == null)
+            {
+                return CustomBadRequest("Task Not Found", []);
+            }
+
+            var taskAttachments = await context
+                .TaskAttachments.AsNoTracking()
+                .Include(ta => ta.Student)
+                    .ThenInclude(s => s!.User)
+                .Include(ta => ta.Doctor)
+                    .ThenInclude(d => d!.User)
+                .Where(ta => ta.TaskId == taskId)
+                .ToListAsync();
+
+            var taskAttachmentsDtos = taskAttachments.Select(ta => ta.ToDto());
+
+            return Success(taskAttachmentsDtos, "Task attachments retrieved successfully");
+        }
     }
 }

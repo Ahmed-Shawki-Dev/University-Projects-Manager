@@ -11,5 +11,6 @@ public record TaskAttachmentDto(
     string FileName,
     string FileType,
     long FileSize,
+    string FileUrl,
     string UploaderName
 );

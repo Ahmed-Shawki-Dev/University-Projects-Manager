@@ -22,6 +22,7 @@ import {
 import { ChangeEvent, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { mutate } from "swr";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
@@ -33,7 +34,11 @@ const getFileIcon = (fileType: string) => {
   return <FileIcon className="w-4 h-4 text-muted-foreground" />;
 };
 
-export default function TaskAttachmentsSection({ taskId }: { taskId: string }) {
+export default function TaskAttachmentUploadForm({
+  taskId,
+}: {
+  taskId: string;
+}) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleButtonClick = () => {
@@ -90,6 +95,7 @@ export default function TaskAttachmentsSection({ taskId }: { taskId: string }) {
     if (res.isSuccess) {
       toast.success("Files uploaded successfully");
       reset();
+      mutate(`task-attachments-${taskId}`);
     } else {
       toast.error(res.message || "Error while adding files");
     }

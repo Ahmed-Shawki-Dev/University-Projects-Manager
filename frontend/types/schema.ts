@@ -301,5 +301,6 @@ export interface TaskAttachmentDto {
   fileName: string;
   fileType: string;
   fileSize: number;
+  fileUrl: string;
   uploaderName: string;
 }

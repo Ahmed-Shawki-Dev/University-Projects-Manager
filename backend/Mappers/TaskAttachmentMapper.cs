@@ -21,6 +21,7 @@ namespace backend.Mappers
                 taskAttachment.FileName,
                 taskAttachment.FileType,
                 taskAttachment.FileSize,
+                taskAttachment.FilePath,
                 uploaderName
             );
         }
