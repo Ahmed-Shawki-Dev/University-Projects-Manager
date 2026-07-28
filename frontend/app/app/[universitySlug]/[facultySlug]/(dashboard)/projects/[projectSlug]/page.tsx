@@ -3,6 +3,7 @@ import { getTaskBoards } from "@/action/task/getTaskBoards";
 import { getTeamMembers } from "@/action/teams/getTeamMembers";
 import KanbanBoard from "@/components/KanbanBoard";
 import ProjectSettingsModal from "@/components/Settings/ProjectSettingsModal";
+import ProjectActivitiesButton from "@/components/Student-Dashboard/ProjectActivitiesButton";
 import FilterKanbanTasks from "@/components/Task/FilterKanbanTasks";
 import TeamModal from "@/components/Team/TeamModal";
 
@@ -41,6 +42,7 @@ const ProjectPage = async ({ params, searchParams }: IProps) => {
         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
           <TeamModal members={teamMembersRes?.data ?? []} />
           <ProjectSettingsModal slugs={slugs} />
+          <ProjectActivitiesButton projectSlug={slugs.projectSlug} />
           <FilterKanbanTasks
             milestones={milestonesRes.data}
             teamMembers={teamMembersRes.data}

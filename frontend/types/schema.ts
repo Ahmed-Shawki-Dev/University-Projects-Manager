@@ -304,3 +304,10 @@ export interface TaskAttachmentDto {
   fileUrl: string;
   uploaderName: string;
 }
+
+// Project Activities
+export interface ProjectActivitiesDto {
+  id: string;
+  message: string;
+  createdAt: string;
+}
