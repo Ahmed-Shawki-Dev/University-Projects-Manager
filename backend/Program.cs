@@ -24,6 +24,8 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<CheckFacultyContextFilter>();
 
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
+
 // OpenAPI
 builder.Services.AddOpenApi(options =>
 {

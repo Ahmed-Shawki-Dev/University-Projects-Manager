@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations
 {
     /// <inheritdoc />
-    public partial class SyncPostgresChanges : Migration
+    public partial class InitialWithNotifications : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -65,6 +65,22 @@ namespace backend.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Universities", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserNotifications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Message = table.Column<string>(type: "text", nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserNotifications", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -448,6 +464,75 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TaskAttachments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FileName = table.Column<string>(type: "text", nullable: false),
+                    FilePath = table.Column<string>(type: "text", nullable: false),
+                    FileSize = table.Column<long>(type: "bigint", nullable: false),
+                    FileType = table.Column<string>(type: "text", nullable: false),
+                    TaskId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DoctorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskAttachments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TaskAttachments_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskAttachments_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskAttachments_Tasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "Tasks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaskComments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
+                    TaskId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DoctorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskComments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TaskComments_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskComments_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TaskComments_Tasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "Tasks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TaskStudents",
                 columns: table => new
                 {
@@ -574,6 +659,36 @@ namespace backend.Migrations
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TaskAttachments_DoctorId",
+                table: "TaskAttachments",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAttachments_StudentId",
+                table: "TaskAttachments",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAttachments_TaskId",
+                table: "TaskAttachments",
+                column: "TaskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskComments_DoctorId",
+                table: "TaskComments",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskComments_StudentId",
+                table: "TaskComments",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskComments_TaskId",
+                table: "TaskComments",
+                column: "TaskId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tasks_MilestoneId",
                 table: "Tasks",
                 column: "MilestoneId");
@@ -629,16 +744,25 @@ namespace backend.Migrations
                 name: "StudentTeams");
 
             migrationBuilder.DropTable(
+                name: "TaskAttachments");
+
+            migrationBuilder.DropTable(
+                name: "TaskComments");
+
+            migrationBuilder.DropTable(
                 name: "TaskStudents");
+
+            migrationBuilder.DropTable(
+                name: "UserNotifications");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Doctors");
+                name: "Teams");
 
             migrationBuilder.DropTable(
-                name: "Teams");
+                name: "Doctors");
 
             migrationBuilder.DropTable(
                 name: "Students");
