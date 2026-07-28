@@ -9,7 +9,7 @@ import {
 import { ProjectType } from "@/types/schema";
 import { usePathname, useRouter } from "next/navigation";
 
-export default function ProjectExploreFillter({
+export default function ProjectExploreFilter({
   currentOption,
 }: {
   currentOption?: ProjectType;

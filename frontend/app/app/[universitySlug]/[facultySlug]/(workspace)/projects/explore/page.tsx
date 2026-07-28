@@ -5,7 +5,7 @@ import { ProjectType } from "@/types/schema";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import ExploreProjectCard from "./ExploreProjectCard";
-import ProjectExploreFillter from "./ProjectExploreFillter";
+import ProjectExploreFilter from "./ProjectExploreFilter";
 
 interface IProps {
   params: Promise<{
@@ -71,7 +71,7 @@ export default async function ExploreProjectsPage({
         </div>
 
         <div className="text-xs text-muted-foreground">
-          <ProjectExploreFillter currentOption={query.projectType} />
+          <ProjectExploreFilter currentOption={query.projectType} />
         </div>
       </div>
 
