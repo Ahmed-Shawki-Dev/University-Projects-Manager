@@ -3,7 +3,9 @@ using backend.Data;
 using backend.DTOs;
 using backend.Mappers;
 using backend.Models;
+using backend.Notifications.Events;
 using backend.Utils;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +14,8 @@ namespace backend.Controllers
     [Route(
         "api/universities/{universitySlug}/faculties/{facultySlug}/projects/{projectSlug}/tasks"
     )]
-    public class TaskController(ApplicationDbContext context) : BaseApiController
+    public class TaskController(ApplicationDbContext context, IMediator mediator)
+        : BaseApiController
     {
         // ** Get All Tasks
         [HttpGet]
@@ -150,6 +153,8 @@ namespace backend.Controllers
             [FromBody] UpdateTaskStatusDto updatedStatus
         )
         {
+            var user = User.FindFirstValue("userId");
+            var userId = Guid.Parse(user!);
             var task = await context.Tasks.FindAsync(taskId);
             if (task == null)
                 return CustomNotFound("Task Not Found", []);
@@ -157,6 +162,10 @@ namespace backend.Controllers
             task.Status = updatedStatus.Status;
 
             await context.SaveChangesAsync();
+
+            await mediator.Publish(
+                new TaskStatusChangedEvent(task.Id, task.Title, task.Status, task.ProjectId, userId)
+            );
 
             return Success(task.ToDto(), "Status Changed Successfully");
         }
