@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/action/auth/me";
-import AppHeader from "@/components/app-header";
+import AdminHeader from "@/components/AdminHeader";
+import { AdminSidebar } from "@/components/AdminSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { redirect } from "next/navigation";
 
@@ -18,8 +19,9 @@ export default async function AdminLayout({ children, params }: IProps) {
 
   return (
     <SidebarProvider>
+      <AdminSidebar userClaims={userClaims} />
       <main className="flex flex-1 flex-col min-h-screen overflow-hidden">
-        <AppHeader />
+        <AdminHeader />
         <div className="flex-1 p-6">{children}</div>
       </main>
     </SidebarProvider>
