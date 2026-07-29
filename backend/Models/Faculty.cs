@@ -16,7 +16,10 @@ namespace backend.Models
         // ** Relation With Students => One Faculty Have Many Students
         public List<Student> Students { get; set; } = new();
 
-        // ** Relation With Students => One Faculty Have Many Students
+        // ** Relation With Students => One Faculty Have Many AcademicContexts
         public List<AcademicContext> AcademicContexts { get; set; } = new();
+
+        // ** Relation With Admin => One Faculty Have Many Admins
+        public List<Admin> Admins { get; set; } = new();
     }
 }

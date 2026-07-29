@@ -26,6 +26,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
     public DbSet<TaskComment> TaskComments { get; set; }
     public DbSet<TaskAttachment> TaskAttachments { get; set; }
     public DbSet<ProjectActivity> ProjectActivities { get; set; }
+    public DbSet<Admin> Admins { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -102,6 +103,13 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
             .HasOne(u => u.Doctor)
             .WithOne(s => s.User)
             .HasForeignKey<Doctor>(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<AppUser>()
+            .HasOne(u => u.Admin)
+            .WithOne(a => a.User)
+            .HasForeignKey<Admin>(a => a.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // ** Relation Many To Many: Doctor-Projects

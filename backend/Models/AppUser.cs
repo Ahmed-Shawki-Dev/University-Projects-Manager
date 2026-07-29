@@ -8,5 +8,6 @@ namespace backend.Models
 
         public Student? Student { get; set; }
         public Doctor? Doctor { get; set; }
+        public Admin? Admin { get; set; }
     }
 }
