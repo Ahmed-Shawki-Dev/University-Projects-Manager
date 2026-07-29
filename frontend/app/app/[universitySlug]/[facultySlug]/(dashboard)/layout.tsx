@@ -19,7 +19,7 @@ export default async function FacultyLayout({
 
   const userClaims = await getCurrentUser();
   if (!userClaims || userClaims.userRole !== "Student") {
-    redirect(`/app/${universitySlug}/${facultySlug}/doctor-dashboard`);
+    redirect(`/app/${universitySlug}/${facultySlug}`);
   }
 
   return (

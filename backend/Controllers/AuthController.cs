@@ -156,14 +156,46 @@ namespace backend.Controllers
                 }
                 else if (userRole == "Doctor")
                 {
-                    var doctor = await context.Doctors.FirstOrDefaultAsync(d =>
-                        d.UserId == user.Id
-                    );
+                    var doctor = await context
+                        .Doctors.Include(d => d.Faculty)
+                            .ThenInclude(f => f!.University)
+                        .FirstOrDefaultAsync(d =>
+                            d.UserId == user.Id
+                            && d.Faculty != null
+                            && d.Faculty.Slug.ToLower() == facultySlug.ToLower()
+                            && d.Faculty.University != null
+                            && d.Faculty.University.Slug.ToLower() == universitySlug.ToLower()
+                        );
 
                     if (doctor == null)
-                        return CustomBadRequest("Doctor profile not found.", []);
+                    {
+                        return CustomBadRequest(
+                            "You are not registered as a doctor in this faculty/university.",
+                            []
+                        );
+                    }
 
                     authClaims.Add(new Claim("doctorId", doctor.Id.ToString()));
+                }
+                else if (userRole == "Admin")
+                {
+                    var admin = await context
+                        .Admins.Include(a => a.Faculty)
+                            .ThenInclude(f => f.University)
+                        .FirstOrDefaultAsync(a =>
+                            a.UserId == user.Id
+                            && a.Faculty.Slug == facultySlug
+                            && a.Faculty.University.Slug == universitySlug
+                        );
+
+                    if (admin == null)
+                    {
+                        return CustomBadRequest(
+                            "You are not authorized as an Admin for this faculty/university.",
+                            []
+                        );
+                    }
+                    authClaims.Add(new Claim("adminId", admin.Id.ToString()));
                 }
                 else
                 {
@@ -182,7 +214,7 @@ namespace backend.Controllers
 
                 LoginResponseDto res = new(token, userRes);
 
-                return Success(res, "Welcome");
+                return Success(res, "Logged in successfully.");
             }
             else
             {

@@ -18,10 +18,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export function LoginForm() {
+  const [isNavigating, setIsNavigating] = useState(false);
   const facultyData = useFacultyStore((s) => s.facultyData);
   const universityName = facultyData?.university?.name;
   const facultyName = facultyData?.name;
@@ -41,20 +43,26 @@ export function LoginForm() {
     formState: { isSubmitting },
   } = form;
 
+  const isLoading = isSubmitting || isNavigating;
+
   const onSubmit = async (data: LoginInput) => {
     try {
       const res = await loginAction(data, slugs);
       if (res.isSuccess) {
+        toast.success(res.message || "Welcome back!");
+        setIsNavigating(true);
+
         if (res.data.user.userRole === "Student") {
           router.push(`/app/${slugs.universitySlug}/${slugs.facultySlug}`);
-        }
-        if (res.data.user.userRole === "Doctor") {
+        } else if (res.data.user.userRole === "Doctor") {
           router.push(
             `/app/${slugs.universitySlug}/${slugs.facultySlug}/doctor-dashboard`,
           );
+        } else if (res.data.user.userRole === "Admin") {
+          router.push(
+            `/app/${slugs.universitySlug}/${slugs.facultySlug}/admin-dashboard`,
+          );
         }
-        toast.success(res.message || "Login done successfully");
-        form.reset();
       } else {
         form.setError("root", {
           message: res.message || "Something went wrong",
@@ -103,6 +111,7 @@ export function LoginForm() {
                     {...field}
                     id="email"
                     type="email"
+                    disabled={isLoading}
                     placeholder="example@muc.edu.eg"
                   />
                   {fieldState.invalid && (
@@ -122,6 +131,7 @@ export function LoginForm() {
                     {...field}
                     id="password"
                     type="password"
+                    disabled={isLoading}
                     autoComplete="current-password"
                   />
                   {fieldState.invalid && (
@@ -132,8 +142,8 @@ export function LoginForm() {
             />
 
             <Field>
-              <Button type="submit" disabled={isSubmitting} form="login-form">
-                {isSubmitting ? (
+              <Button type="submit" disabled={isLoading} form="login-form">
+                {isLoading ? (
                   <Loader className="w-4 h-4 animate-spin" />
                 ) : (
                   "Login"

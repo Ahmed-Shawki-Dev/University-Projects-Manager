@@ -21,5 +21,8 @@ namespace backend.Models
 
         // ** Relation With Admin => One Faculty Have Many Admins
         public List<Admin> Admins { get; set; } = new();
+
+        // ** Relation With Projects => Many To Many
+        public List<Doctor> Doctors { get; set; } = new();
     }
 }

@@ -1,3 +1,4 @@
+import { getCurrentUser } from "@/action/auth/me";
 import { redirect } from "next/navigation";
 
 interface PageProps {
@@ -9,6 +10,23 @@ interface PageProps {
 
 export default async function FacultyRootPage({ params }: PageProps) {
   const { universitySlug, facultySlug } = await params;
+  const user = await getCurrentUser();
 
-  redirect(`/app/${universitySlug}/${facultySlug}/projects`);
+  if (!user) {
+    redirect(`/app/${universitySlug}/${facultySlug}/login`);
+  }
+
+  switch (user.userRole) {
+    case "Admin":
+      redirect(`/app/${universitySlug}/${facultySlug}/admin-dashboard`);
+
+    case "Doctor":
+      redirect(`/app/${universitySlug}/${facultySlug}/doctor-dashboard`);
+
+    case "Student":
+      redirect(`/app/${universitySlug}/${facultySlug}/projects`);
+
+    default:
+      redirect(`/app/${universitySlug}/${facultySlug}/login`);
+  }
 }

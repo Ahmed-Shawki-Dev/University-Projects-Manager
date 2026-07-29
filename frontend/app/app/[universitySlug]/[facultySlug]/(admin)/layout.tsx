@@ -1,7 +1,5 @@
 import { getCurrentUser } from "@/action/auth/me";
-import { getMyProjects } from "@/action/project/getMyProjects";
 import AppHeader from "@/components/app-header";
-import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { redirect } from "next/navigation";
 
@@ -10,24 +8,16 @@ interface IProps {
   params: Promise<{ universitySlug: string; facultySlug: string }>;
 }
 
-export default async function ProfessorLayout({ children, params }: IProps) {
+export default async function AdminLayout({ children, params }: IProps) {
   const { universitySlug, facultySlug } = await params;
-  const res = await getMyProjects({ universitySlug, facultySlug });
-  const projects = res?.data ?? [];
   const userClaims = await getCurrentUser();
 
-  if (!userClaims || userClaims.userRole !== "Doctor") {
+  if (!userClaims || userClaims.userRole !== "Admin") {
     redirect(`/app/${universitySlug}/${facultySlug}`);
   }
 
   return (
     <SidebarProvider>
-      <AppSidebar
-        projects={projects}
-        isProfessor={true}
-        userClaims={userClaims ?? undefined}
-      />
-
       <main className="flex flex-1 flex-col min-h-screen overflow-hidden">
         <AppHeader />
         <div className="flex-1 p-6">{children}</div>
