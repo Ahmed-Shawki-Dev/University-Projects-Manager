@@ -95,14 +95,12 @@ builder
     });
 
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
+app.MapOpenApi();
+app.MapScalarApiReference(options =>
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference(options =>
-    {
-        options.WithTitle("University Project API").WithTheme(ScalarTheme.Saturn);
-    });
-}
+    options.WithTitle("UniProjects API")
+           .WithTheme(ScalarTheme.Moon);
+});
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
