@@ -113,21 +113,27 @@ app.MapControllers();
 // For File Upload
 app.UseStaticFiles();
 
-// Add Roles To Program
+// Automatic Migrations & Data Seeding on Startup
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
     try
     {
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        // 1. Apply Pending EF Core Migrations
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        await context.Database.MigrateAsync();
+        logger.LogInformation("Database migrations applied successfully.");
 
+        // 2. Seed Identity Roles
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
         await IdentitySeed.SeedRolesAsync(roleManager);
+        logger.LogInformation("Identity roles seeded successfully.");
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding roles.");
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
     }
 }
-
 app.Run();
