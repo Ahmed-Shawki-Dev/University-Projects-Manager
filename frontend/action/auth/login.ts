@@ -28,10 +28,14 @@ export const loginAction = async (
   }
 
   const cookieStore = await cookies();
+
+  const isHttps =
+    process.env.NEXT_PUBLIC_SERVER_URL?.startsWith("https://") ?? false;
+
   cookieStore.set("token", res.data.token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: isHttps,
+    sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60,
     path: "/",
   });
