@@ -7,6 +7,6 @@ public static class DoctorMapper
 {
     public static DoctorDto ToDto(this Doctor doctor)
     {
-        return new DoctorDto(doctor.Id, doctor.User?.FullName ?? "N/A", doctor.AcademicRank);
+        return new DoctorDto(doctor.Id, doctor.User?.FullName ?? "N/A",doctor.User?.Email?? "N/A", doctor.AcademicRank);
     }
 }

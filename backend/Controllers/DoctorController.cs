@@ -113,7 +113,7 @@ public class DoctorController(ApplicationDbContext context, UserManager<AppUser>
             {
                 UserId = user.Id,
                 FacultyId = faculty.Id,
-                AcademicRank = dto?.AcademicRank,
+                AcademicRank = dto?.AcademicRank??"N/A",
             };
 
             await context.Doctors.AddAsync(doctor);

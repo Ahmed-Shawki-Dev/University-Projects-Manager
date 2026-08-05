@@ -22,7 +22,9 @@ export default async function AdminLayout({ children, params }: IProps) {
       <AdminSidebar userClaims={userClaims} />
       <main className="flex flex-1 flex-col min-h-screen overflow-hidden">
         <AdminHeader />
-        <div className="flex-1 p-6">{children}</div>
+        <div className="flex-1 p-6 md:p-8 container mx-auto w-full">
+          {children}
+        </div>
       </main>
     </SidebarProvider>
   );

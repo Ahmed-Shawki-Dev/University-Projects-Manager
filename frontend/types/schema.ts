@@ -311,3 +311,18 @@ export interface ProjectActivitiesDto {
   message: string;
   createdAt: string;
 }
+
+// Doctor Dtos
+export interface DoctorDto {
+  id: string;
+  fullName: string;
+  email: string;
+  academicRank?: string;
+}
+
+export interface CreateDoctorDto {
+  email: string;
+  fullName: string;
+  academicRank?: string;
+  password: string;
+}

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace backend.DTOs;
 
-public record DoctorDto(Guid Id, string FullName, string? AcademicRank);
+public record DoctorDto(Guid Id, string FullName,string Email, string? AcademicRank);
 
 public record CreateDoctorDto(
     [Required] [EmailAddress] string Email,
