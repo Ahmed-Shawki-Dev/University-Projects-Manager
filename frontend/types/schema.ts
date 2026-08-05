@@ -326,3 +326,11 @@ export interface CreateDoctorDto {
   academicRank?: string;
   password: string;
 }
+
+// Students Dto
+export interface StudentDto {
+  id: string;
+  fullName: string;
+  email: string;
+  studentCode: string;
+}
