@@ -33,17 +33,21 @@ namespace backend.Controllers
                 return Forbid();
             }
 
-            var projectExists = await context
+            var project = await context
                 .Projects.AsNoTracking()
-                .AnyAsync(p => p.Slug == projectSlug && p.Faculty.Slug == facultySlug);
+                .Where(p => p.Slug == projectSlug && p.Faculty.Slug == facultySlug)
+                .Select(p => new { p.Id })
+                .FirstOrDefaultAsync();
 
-            if (!projectExists)
+            if (project == null)
             {
                 return CustomNotFound(
                     $"Project with slug '{projectSlug}' was not found under the specified university and faculty.",
                     null
                 );
             }
+
+            var projectId = project.Id;
 
             var tasksQuery = context
                 .Tasks.AsNoTracking()
@@ -129,7 +133,7 @@ namespace backend.Controllers
             };
 
             return Success(
-                new KanbanBoardDto(tasks, columns, columnOrder),
+                new KanbanBoardDto(projectId, tasks, columns, columnOrder),
                 "Tasks Retrieved Successfully"
             );
         }

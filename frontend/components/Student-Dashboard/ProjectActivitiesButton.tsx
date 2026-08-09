@@ -8,22 +8,57 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { HubConnectionBuilder } from "@microsoft/signalr";
 import { format } from "date-fns";
 import { Activity, Loader2 } from "lucide-react";
+import { useEffect } from "react";
 import useSWR from "swr";
 import { Button } from "../ui/button";
 
 export default function ProjectActivitiesButton({
   projectSlug,
+  projectId,
 }: {
   projectSlug: string;
+  projectId: string;
 }) {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     projectSlug ? `/api/activities/${projectSlug}` : null,
     () => getProjectActivities(projectSlug),
   );
 
   const activities = data?.data || [];
+
+  useEffect(() => {
+    console.log(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/hubs/projects/${projectId}`,
+    );
+    if (!projectSlug) return;
+    const connection = new HubConnectionBuilder()
+      .withUrl(`${process.env.NEXT_PUBLIC_SERVER_URL}/hubs/projects`)
+      .withAutomaticReconnect()
+      .build();
+
+    connection.start().then(() => {
+      connection.invoke("JoinProjectGroup", projectId);
+    });
+
+    connection.on("ReceivedActivity", (newActivity) => {
+      mutate((currentData) => {
+        if (!currentData) return currentData;
+
+        return {
+          ...currentData,
+          data: [newActivity, ...(currentData.data || [])],
+        };
+      }, false);
+    });
+
+    return () => {
+      connection.invoke("LeaveProjectGroup", projectId).catch(() => {});
+      connection.stop();
+    };
+  }, [projectSlug]);
 
   return (
     <Dialog>

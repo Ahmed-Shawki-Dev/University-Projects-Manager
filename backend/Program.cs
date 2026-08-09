@@ -4,6 +4,7 @@ using backend.Data;
 using backend.DTOs;
 using backend.Extensions;
 using backend.Filters;
+using backend.Hubs;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,6 +17,25 @@ using Scalar.AspNetCore;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "AllowNextJs",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+    );
+});
+
+// SignalR
+builder.Services.AddSignalR();
 
 // DI
 builder.Services.AddScoped<TokenService>();
@@ -98,10 +118,12 @@ var app = builder.Build();
 app.MapOpenApi();
 app.MapScalarApiReference(options =>
 {
-    options.WithTitle("UniProjects API")
-           .WithTheme(ScalarTheme.Moon);
+    options.WithTitle("UniProjects API").WithTheme(ScalarTheme.Moon);
 });
 app.UseHttpsRedirection();
+
+// CORS
+app.UseCors("AllowNextJs");
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -134,4 +156,8 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred while migrating or seeding the database.");
     }
 }
+
+// SignalR Hubs
+app.MapHub<ProjectHub>("/hubs/projects");
+
 app.Run();

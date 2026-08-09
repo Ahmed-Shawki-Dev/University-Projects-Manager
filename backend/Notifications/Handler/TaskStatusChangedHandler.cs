@@ -1,13 +1,18 @@
+using System.Runtime.CompilerServices;
 using backend.Data;
+using backend.Hubs;
 using backend.Models;
 using backend.Notifications.Events;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Notifications.Handlers
 {
-    public class TaskStatusChangedHandler(ApplicationDbContext context)
-        : INotificationHandler<TaskStatusChangedEvent>
+    public class TaskStatusChangedHandler(
+        ApplicationDbContext context,
+        IHubContext<ProjectHub> hubContext
+    ) : INotificationHandler<TaskStatusChangedEvent>
     {
         public async System.Threading.Tasks.Task Handle(
             TaskStatusChangedEvent notification,
@@ -28,6 +33,21 @@ namespace backend.Notifications.Handlers
 
             context.ProjectActivities.Add(newNotification);
             await context.SaveChangesAsync(cancellationToken);
+
+            string groupName = notification.ProjectId.ToString();
+
+            await hubContext
+                .Clients.Group(groupName)
+                .SendAsync(
+                    "ReceivedActivity",
+                    new
+                    {
+                        Id = newNotification.Id,
+                        Message = newNotification.Message,
+                        CreatedAt = newNotification.CreatedAt,
+                    },
+                    cancellationToken
+                );
         }
     }
 }

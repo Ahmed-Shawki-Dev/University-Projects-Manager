@@ -42,7 +42,10 @@ const ProjectPage = async ({ params, searchParams }: IProps) => {
         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
           <TeamModal members={teamMembersRes?.data ?? []} />
           <ProjectSettingsModal slugs={slugs} />
-          <ProjectActivitiesButton projectSlug={slugs.projectSlug} />
+          <ProjectActivitiesButton
+            projectSlug={slugs.projectSlug}
+            projectId={boardRes?.data?.projectId ?? ""}
+          />
           <FilterKanbanTasks
             milestones={milestonesRes.data}
             teamMembers={teamMembersRes.data}
