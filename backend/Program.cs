@@ -17,6 +17,22 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "Nextjs",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+    );
+});
+
 // DI
 builder.Services.AddScoped<TokenService>();
 
@@ -98,10 +114,11 @@ var app = builder.Build();
 app.MapOpenApi();
 app.MapScalarApiReference(options =>
 {
-    options.WithTitle("UniProjects API")
-           .WithTheme(ScalarTheme.Moon);
+    options.WithTitle("UniProjects API").WithTheme(ScalarTheme.Moon);
 });
 app.UseHttpsRedirection();
+
+app.UseCors("Nextjs");
 
 app.UseAuthentication();
 app.UseAuthorization();
