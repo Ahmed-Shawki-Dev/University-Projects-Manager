@@ -295,7 +295,6 @@ export interface CreateTaskCommentDto {
 }
 
 // ** Task Attachment
-
 export interface TaskAttachmentDto {
   id: string;
   fileName: string;
