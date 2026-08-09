@@ -44,7 +44,7 @@ export default function KanbanColumn({
       <CardHeader className="shrink-0">
         <CardTitle className="flex flex-col gap-2">
           <span
-            className={`px-2.5 py-1 rounded-md text-xs font-semibold border w-fit ${styles.badge}`}
+            className={`px-2.5 py-1 rounded-md text-xs font-semibold border w-fit select-none ${styles.badge}`}
           >
             {col.title}
           </span>

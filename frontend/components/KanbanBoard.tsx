@@ -1,5 +1,6 @@
 "use client";
 import { updateTaskStatus } from "@/action/task/updateTaskStatus";
+import { useDragScroll } from "@/hooks/useDragScroll";
 import {
   KanbanColumnDto,
   MilestoneWithTasksDto,
@@ -90,14 +91,17 @@ const KanbanBoard = ({
       await updateTaskStatus(draggableId, { status: newStatus });
     });
   };
-
+  const dragScrollProps = useDragScroll();
   return (
     <DndContext
       sensors={sensors}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-4 mt-6 items-start justify-start h-full overflow-x-auto pb-4 px-2 min-w-full touch-pan-x">
+      <div
+        {...dragScrollProps}
+        className="flex gap-4 mt-4 items-start justify-start h-full overflow-x-auto overflow-y-hidden pb-4 px-2 w-full touch-pan-x scrollbar-thin"
+      >
         {columnsOrder.map((col) => {
           const colTasks = tasks.filter((task) =>
             optimisticColumns[col].taskIds.includes(task.id),

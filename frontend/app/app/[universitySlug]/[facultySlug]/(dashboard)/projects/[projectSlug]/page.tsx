@@ -31,7 +31,7 @@ const ProjectPage = async ({ params, searchParams }: IProps) => {
   ]);
 
   return (
-    <div className="w-full flex flex-col h-full container mx-auto px-2 py-2 space-y-2">
+    <div className="w-full flex flex-col h-full px-4 py-2 space-y-2 overflow-hidden">
       <div className="w-full border-b pb-3 pt-1 shrink-0 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-base sm:text-lg font-bold tracking-tight uppercase truncate">
@@ -49,7 +49,6 @@ const ProjectPage = async ({ params, searchParams }: IProps) => {
           />
         </div>
       </div>
-
       <div className="w-full h-[calc(100vh-200px)]">
         <KanbanBoard
           columns={boardRes?.data?.columns ?? {}}
