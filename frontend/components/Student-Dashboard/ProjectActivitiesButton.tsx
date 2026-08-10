@@ -9,10 +9,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
-import { Activity, Loader2 } from "lucide-react";
+import { ClockFading, Loader2 } from "lucide-react";
 import useSWR from "swr";
 import { Button } from "../ui/button";
-
 export default function ProjectActivitiesButton({
   projectSlug,
 }: {
@@ -29,14 +28,14 @@ export default function ProjectActivitiesButton({
     <Dialog>
       <DialogTrigger asChild>
         <Button size={"icon"} variant={"secondary"} className="cursor-pointer">
-          <Activity className="w-4 h-4" />
+          <ClockFading className="w-4 h-4" />
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md max-h-[85vh] flex flex-col p-6">
         <DialogHeader className="pb-4 border-b">
           <DialogTitle className="flex items-center gap-2 text-base font-semibold">
-            <Activity className="w-4 h-4" />
+            <ClockFading className="w-4 h-4" />
             Project Activity
           </DialogTitle>
         </DialogHeader>

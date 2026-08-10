@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { Button } from "./ui/button";
 import { SidebarTrigger } from "./ui/sidebar";
 
-export default function AppHeader() {
+export default function AppHeader({ isDoctor }: { isDoctor?: boolean }) {
   const { universitySlug, facultySlug } = useParams();
 
   return (
@@ -14,18 +14,20 @@ export default function AppHeader() {
         <SidebarTrigger className="-ml-1 text-muted-foreground hover:text-foreground" />
       </div>
 
-      <div className="flex items-center gap-4">
-        <Link href={`/app/${universitySlug}/${facultySlug}/projects/explore`}>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 text-xs font-medium"
-          >
-            <Compass className="w-3.5 h-3.5" />
-            <span>Explore Projects</span>
-          </Button>
-        </Link>
-      </div>
+      {!isDoctor && (
+        <div className="flex items-center gap-4">
+          <Link href={`/app/${universitySlug}/${facultySlug}/projects/explore`}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 text-xs font-medium"
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>Explore Projects</span>
+            </Button>
+          </Link>
+        </div>
+      )}
     </header>
   );
 }

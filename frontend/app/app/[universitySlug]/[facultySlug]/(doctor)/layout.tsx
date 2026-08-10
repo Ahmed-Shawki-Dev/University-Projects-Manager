@@ -29,7 +29,7 @@ export default async function ProfessorLayout({ children, params }: IProps) {
       />
 
       <main className="flex flex-1 flex-col min-h-screen overflow-hidden">
-        <AppHeader />
+        <AppHeader isDoctor />
         <div className="flex-1 p-6">{children}</div>
       </main>
     </SidebarProvider>
