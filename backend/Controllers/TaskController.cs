@@ -159,12 +159,21 @@ namespace backend.Controllers
             if (task == null)
                 return CustomNotFound("Task Not Found", []);
 
+            var oldStatus = task.Status;
+
             task.Status = updatedStatus.Status;
 
             await context.SaveChangesAsync();
 
             await mediator.Publish(
-                new TaskStatusChangedEvent(task.Id, task.Title, task.Status, task.ProjectId, userId)
+                new TaskStatusChangedEvent(
+                    task.Id,
+                    task.Title,
+                    oldStatus,
+                    task.Status,
+                    task.ProjectId,
+                    userId
+                )
             );
 
             return Success(task.ToDto(), "Status Changed Successfully");

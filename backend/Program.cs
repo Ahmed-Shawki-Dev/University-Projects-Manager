@@ -33,6 +33,9 @@ builder.Services.AddCors(options =>
     );
 });
 
+// Real Time
+builder.Services.AddSignalR();
+
 // DI
 builder.Services.AddScoped<TokenService>();
 
