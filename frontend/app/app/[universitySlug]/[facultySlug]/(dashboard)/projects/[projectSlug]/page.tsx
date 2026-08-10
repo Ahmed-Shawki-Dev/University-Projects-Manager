@@ -57,6 +57,7 @@ const ProjectPage = async ({ params, searchParams }: IProps) => {
           milestones={milestonesRes?.data ?? []}
           isProfessor={false}
           teamMembers={teamMembersRes.data ?? []}
+          projectId={boardRes?.data?.projectId ?? ""}
         />
       </div>
     </div>

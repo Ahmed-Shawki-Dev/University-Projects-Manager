@@ -4,6 +4,7 @@ using backend.Data;
 using backend.DTOs;
 using backend.Extensions;
 using backend.Filters;
+using backend.Hubs;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -130,6 +131,8 @@ app.MapControllers();
 
 // For File Upload
 app.UseStaticFiles();
+
+app.MapHub<ProjectHub>("/hubs/projects");
 
 // Automatic Migrations & Data Seeding on Startup
 using (var scope = app.Services.CreateScope())

@@ -140,6 +140,7 @@ export interface KanbanColumnDto {
 }
 
 export interface KanbanBoardDto {
+  projectId: string;
   tasks: TaskDto[];
   columns: Record<TaskStatusEnum, KanbanColumnDto>;
   columnsOrder: TaskStatusEnum[];

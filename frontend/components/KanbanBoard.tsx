@@ -1,6 +1,7 @@
 "use client";
 import { updateTaskStatus } from "@/action/task/updateTaskStatus";
 import { useDragScroll } from "@/hooks/useDragScroll";
+import useProjectSockets from "@/hooks/useProjectSocket";
 import {
   KanbanColumnDto,
   MilestoneWithTasksDto,
@@ -29,6 +30,7 @@ interface IProps {
   milestones?: MilestoneWithTasksDto[];
   isProfessor?: boolean;
   teamMembers?: TeamMemberDto[];
+  projectId?: string;
 }
 
 const KanbanBoard = ({
@@ -38,7 +40,11 @@ const KanbanBoard = ({
   milestones,
   isProfessor = false,
   teamMembers,
+  projectId,
 }: IProps) => {
+  // Start Task Change Connection
+  useProjectSockets(projectId ?? "");
+
   const [isPending, startTransition] = useTransition();
 
   const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
