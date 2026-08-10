@@ -59,10 +59,7 @@ export default function NavUser({ user }: NavUserProps) {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent"
-            >
+            <SidebarMenuButton size="lg">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user?.fullName} alt={user?.fullName} />
                 <AvatarFallback className="rounded-lg bg-primary/10 text-xs font-semibold">

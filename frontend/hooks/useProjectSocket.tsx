@@ -3,6 +3,7 @@
 import { HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { mutate } from "swr";
 
 export default function useProjectSockets(projectId: string | undefined) {
   const router = useRouter();
@@ -30,6 +31,10 @@ export default function useProjectSockets(projectId: string | undefined) {
 
         connection.on("TaskStatusUpdated", () => {
           router.refresh();
+          mutate(
+            (key) =>
+              typeof key === "string" && key.startsWith("/api/activities/"),
+          );
         });
       } catch (err) {
         if (isMounted) {

@@ -3,7 +3,7 @@ using backend.Data;
 using backend.DTOs;
 using backend.Mappers;
 using backend.Models;
-using backend.Notifications.Events;
+using backend.Notifications.Event;
 using backend.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -170,12 +170,10 @@ namespace backend.Controllers
             await context.SaveChangesAsync();
 
             await mediator.Publish(
-                new TaskStatusChangedEvent(
+                new TaskChangedEvent(
                     task.Id,
-                    task.Title,
-                    oldStatus,
-                    task.Status,
                     task.ProjectId,
+                    $"changed task '{task.Title}' status to {task.Status}",
                     userId
                 )
             );
@@ -198,6 +196,7 @@ namespace backend.Controllers
             {
                 return Forbid();
             }
+            var userId = Guid.Parse(User.FindFirstValue("userId")!);
 
             var project = await context
                 .Projects.Include(p => p.Team)
@@ -245,6 +244,16 @@ namespace backend.Controllers
             context.Tasks.Add(taskModel);
             await context.SaveChangesAsync();
 
+            // Sockets
+            await mediator.Publish(
+                new TaskChangedEvent(
+                    taskModel.Id,
+                    project.Id,
+                    $"created task '{taskModel.Title}'",
+                    userId
+                )
+            );
+
             var createdTaskDto = await context
                 .Tasks.Where(t => t.Id == taskModel.Id)
                 .Select(t => new TaskDto(
@@ -278,12 +287,32 @@ namespace backend.Controllers
         [HttpDelete("/api/tasks/{taskId}")]
         public async Task<IActionResult> RemoveTask(Guid taskId)
         {
-            var deletedCount = await context.Tasks.Where(t => t.Id == taskId).ExecuteDeleteAsync();
+            var userId = Guid.Parse(User.FindFirstValue("userId")!);
 
-            if (deletedCount == 0)
+            var task = await context
+                .Tasks.Select(t => new
+                {
+                    t.Id,
+                    t.ProjectId,
+                    t.Title,
+                })
+                .FirstOrDefaultAsync(t => t.Id == taskId);
+
+            if (task == null)
             {
                 return CustomNotFound("Task Not Found", []);
             }
+
+            await context.Tasks.Where(t => t.Id == taskId).ExecuteDeleteAsync();
+
+            await mediator.Publish(
+                new TaskChangedEvent(
+                    task.Id,
+                    task.ProjectId,
+                    $"deleted task '{task.Title}'",
+                    userId
+                )
+            );
 
             return NoContent();
         }
@@ -295,6 +324,8 @@ namespace backend.Controllers
             [FromBody] UpdateTaskDto updateTask
         )
         {
+            var userId = Guid.Parse(User.FindFirstValue("userId")!);
+
             var taskModel = await context
                 .Tasks.Include(t => t.Project)
                     .ThenInclude(p => p.Team)
@@ -351,6 +382,15 @@ namespace backend.Controllers
             }
 
             await context.SaveChangesAsync();
+
+            await mediator.Publish(
+                new TaskChangedEvent(
+                    taskModel.Id,
+                    taskModel.ProjectId,
+                    $"updated task '{taskModel.Title}' details",
+                    userId
+                )
+            );
 
             var responseDto = new TaskDto(
                 taskModel.Id,

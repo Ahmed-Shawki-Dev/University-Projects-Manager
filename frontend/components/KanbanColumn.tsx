@@ -37,7 +37,7 @@ export default function KanbanColumn({
   return (
     <Card
       className={cn(
-        "w-70 sm:w-80 shrink-0 h-full flex flex-col bg-background border",
+        "w-70 sm:w-80 shrink-0 h-full flex flex-col bg-background border rounded-xl",
         styles.border,
       )}
     >
